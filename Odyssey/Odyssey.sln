@@ -7,9 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BreadcrumbWithDataSourceExa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileBrowserExample", "FileBrowser\FileBrowserExample.csproj", "{F41A958B-D4F1-49A3-AECC-570AFA2F1030}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpanderDemo", "ExpanderDemo\ExpanderDemo.csproj", "{A246A0E8-29CA-41CF-982D-04FBD079FC17}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs08.codeplex.com/
 		SccLocalPath0 = .
@@ -22,6 +24,9 @@ Global
 		SccProjectUniqueName3 = FileBrowser\\FileBrowserExample.csproj
 		SccProjectName3 = FileBrowser
 		SccLocalPath3 = FileBrowser
+		SccProjectUniqueName4 = ExpanderDemo\\ExpanderDemo.csproj
+		SccProjectName4 = ExpanderDemo
+		SccLocalPath4 = ExpanderDemo
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +45,10 @@ Global
 		{F41A958B-D4F1-49A3-AECC-570AFA2F1030}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F41A958B-D4F1-49A3-AECC-570AFA2F1030}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F41A958B-D4F1-49A3-AECC-570AFA2F1030}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A246A0E8-29CA-41CF-982D-04FBD079FC17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A246A0E8-29CA-41CF-982D-04FBD079FC17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A246A0E8-29CA-41CF-982D-04FBD079FC17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A246A0E8-29CA-41CF-982D-04FBD079FC17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

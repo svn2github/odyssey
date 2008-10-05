@@ -8,11 +8,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("BreadcrumbWithDataSourceExample")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Demo for Odyssey.BreadcrumbBar")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("tomssoftware.net")]
 [assembly: AssemblyProduct("BreadcrumbWithDataSourceExample")]
-[assembly: AssemblyCopyright("Copyright ©  2008")]
+[assembly: AssemblyCopyright("Copyright ©  2008 Thomas Gerber")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

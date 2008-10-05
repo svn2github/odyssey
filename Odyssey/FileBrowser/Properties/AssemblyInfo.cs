@@ -8,11 +8,11 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("FileBrowser.cs")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Demo for Odyssey.BreadcrumbBar")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("tomssoftware.net")]
 [assembly: AssemblyProduct("FileBrowser.cs")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2008")]
+[assembly: AssemblyCopyright("Copyright © 2008 Thomas Gerber")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
