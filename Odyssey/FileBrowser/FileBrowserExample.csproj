@@ -97,12 +97,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BreadcrumbBar\Odyssey.Controls.csproj">
-      <Project>{333FDC55-6B47-4A64-A2DF-A4C5823FAC74}</Project>
-      <Name>Odyssey.Controls</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="openfolderHS.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
