@@ -1,4 +1,4 @@
-﻿ <!-- Copyright (c) 2008 Thomas Gerber
+﻿<!-- Copyright (c) 2008 Thomas Gerber
  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
  to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
  and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -7,7 +7,7 @@
  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.-->
-    <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:local="clr-namespace:Odyssey.Controls"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style TargetType="{x:Type local:OdcExpanderHeader}">
@@ -43,7 +43,7 @@
                                                TextElement.FontWeight="Bold"
                                               ContentTemplate="{TemplateBinding ContentTemplate}" Margin="4,0,0,0"/>
                                 </StackPanel>
-                                <Grid Grid.Column="1" Margin="0,0,4,0" x:Name="circleButton" VerticalAlignment="Center">
+                                <Grid Grid.Column="1" Margin="0,0,0,0" x:Name="circleButton"  VerticalAlignment="Center">
                                     <Ellipse Name="circle"
                                          Width="16.5"
                                          Height="16.5"
@@ -53,7 +53,8 @@
                                         Visibility="Visible"
                                          Fill="#e0FFFFFF">
                                     </Ellipse>
-                                    <Path x:Name="path2"                                           
+                                    <Path x:Name="path2"        
+                                          Margin="0.5,1,0,0"
                                           SnapsToDevicePixels="False"
                                           StrokeThickness="3.5"
                                           StrokeEndLineCap="Round"
@@ -62,8 +63,8 @@
                                           Stroke="White" 
                                           VerticalAlignment="Center" HorizontalAlignment="Center" 
                                           Stretch="None"/>
-                                    <Path x:Name="path" 
-                                          Margin="-2,-1,0,0"
+                                    <Path x:Name="path"
+                                          Margin="-1,0,0,0"
                                           SnapsToDevicePixels="False"
                                           Data="{TemplateBinding CollapseGeometry}" 
                                           Stroke="{TemplateBinding Foreground}" 
@@ -92,13 +93,7 @@
                                 <Condition Property="IsChecked" Value="True"/>
                                 <Condition Property="HasExpandGeometry" Value="False"/>
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="path" Property="Margin" Value="0.5,1,0,0"/>
-                            <Setter TargetName="path" Property="LayoutTransform">
-                                <Setter.Value>
-                                    <RotateTransform Angle="180"/>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="path2" Property="LayoutTransform">
+                            <Setter TargetName="circleButton" Property="LayoutTransform">
                                 <Setter.Value>
                                     <RotateTransform Angle="180"/>
                                 </Setter.Value>

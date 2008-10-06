@@ -24,7 +24,7 @@ namespace Odyssey.Controls
     {
         static AnimationDecorator()
         {
-          
+            // AnimationDecorator.ActualHeightProperty.OverrideMetadata(typeof(AnimationDecorator), new UIPropertyMetadata((double)0.0));
         }
 
         public AnimationDecorator()
@@ -33,7 +33,7 @@ namespace Odyssey.Controls
             ClipToBounds = true;
         }
 
-        
+
         /// <summary>
         /// Specify whether to apply opactiy animation.
         /// </summary>
@@ -44,8 +44,8 @@ namespace Odyssey.Controls
         }
 
         public static readonly DependencyProperty OpacityAnimationProperty =
-            DependencyProperty.Register("OpacityAnimation", 
-            typeof(bool), 
+            DependencyProperty.Register("OpacityAnimation",
+            typeof(bool),
             typeof(AnimationDecorator),
             new UIPropertyMetadata(true));
 
@@ -61,10 +61,10 @@ namespace Odyssey.Controls
         }
 
         public static readonly DependencyProperty IsExpandedProperty =
-            DependencyProperty.Register("IsExpanded", 
-            typeof(bool), 
+            DependencyProperty.Register("IsExpanded",
+            typeof(bool),
             typeof(AnimationDecorator),
-            new PropertyMetadata(true,IsExpandedChanged));
+            new PropertyMetadata(true, IsExpandedChanged));
 
 
         public static void IsExpandedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -85,9 +85,9 @@ namespace Odyssey.Controls
         }
 
         public static readonly DependencyProperty HeightAnimationProperty =
-            DependencyProperty.Register("HeightAnimation", 
-            typeof(DoubleAnimation), 
-            typeof(AnimationDecorator), 
+            DependencyProperty.Register("HeightAnimation",
+            typeof(DoubleAnimation),
+            typeof(AnimationDecorator),
             new UIPropertyMetadata(null));
 
 
@@ -103,7 +103,7 @@ namespace Odyssey.Controls
 
         // Using a DependencyProperty as the backing store for Duration.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DurationProperty =
-            DependencyProperty.Register("Duration", typeof(Duration), typeof(AnimationDecorator), new UIPropertyMetadata(new Duration(new TimeSpan(0,0,0,400))));
+            DependencyProperty.Register("Duration", typeof(Duration), typeof(AnimationDecorator), new UIPropertyMetadata(new Duration(new TimeSpan(0, 0, 0, 400))));
 
 
 
@@ -174,16 +174,49 @@ namespace Odyssey.Controls
             if (Child == null) return new Size(0, 0);
 
             Child.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
+            Double h = Child.DesiredSize.Height;
+            Double yOffset = 0;
+            if (this.IsLoaded && IsExpanded && IsVisible)
+            {
+                if (targetHeight != h)
+                {
+                    yOffset = AnimatedResize(h);
+                }
+            }
+            else
+            {
+                targetHeight = h;
+            }
             Size size = new Size();
             size.Width = DesiredSize.Width;
-            size.Height = Child.DesiredSize.Height;
-            Double h = size.Height + YOffset;
+
+            h += YOffset + yOffset;
             if (h < 0) h = 0;
+            Height = h;
             size.Height = h;
             if (Child != null) Child.IsEnabled = h > 0;
             return size;
         }
 
+        private Double AnimatedResize(Double h)
+        {
+            Double yOffset = targetHeight - h;
+            DoubleAnimation animation = HeightAnimation;
+            if (animation == null)
+            {
+                animation = new DoubleAnimation();
+                animation.DecelerationRatio = 0.9;
+                animation.Duration = Duration;
+            }
+            animation.From = yOffset + YOffset;
+            animation.To = 0;
+            targetHeight = h;
+            this.BeginAnimation(AnimationDecorator.YOffsetProperty, animation);
+            return yOffset;
+        }
+
+
+        private double targetHeight = 0;
 
         /// <summary>
         /// Arranges the content of a <see cref="T:System.Windows.Controls.Decorator"/> element.

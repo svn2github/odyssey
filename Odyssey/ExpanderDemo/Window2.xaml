@@ -9,10 +9,10 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <odc:ExplorerBar Grid.Column="0" x:Name="explorerBar">
-            <odc:OdcExpander Header="System Tasks" Image="AlignTableCellMiddleCenterHS.png" x:Name="expander1" IsExpanded="False">
+            <odc:OdcExpander Header="System Tasks" Image="AlignTableCellMiddleCenterHS.png" x:Name="expander1" IsExpanded="True">
                 <StackPanel SnapsToDevicePixels="True">
                     <TextBlock Text="View system information" TextWrapping="Wrap" Margin="0,0,0,4" />
-                    <TextBlock Text="Add or remove programs" TextWrapping="Wrap" Margin="0,4,0,4" />
+                    <TextBlock Text="Add or remove programs" TextWrapping="Wrap" Margin="0,4,0,4" x:Name="text2" />
                     <TextBlock Text="Change Settings" TextWrapping="Wrap" Margin="0,4,0,0" />
                 </StackPanel>
             </odc:OdcExpander>
@@ -20,8 +20,8 @@
                              HeaderBackground="Gold"
                              Image="AlignTableCellMiddleCenterHS.png">
                 <StackPanel>
-                    <Button Click="Button_Click_3">Show/Hide</Button>
-                    <Button Click="Button_Click_1">Gold</Button>
+                    <Button Click="Button_Click_3" Panel.ZIndex="1">Show/Hide</Button>
+                    <Button Click="Button_Click_1">Resize System Tasks</Button>
                 </StackPanel>
             </odc:OdcExpander>
             <odc:OdcExpander Header="Multi Anim">

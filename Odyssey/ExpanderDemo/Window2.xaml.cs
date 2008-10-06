@@ -40,7 +40,7 @@ namespace JediTest
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            Background = Brushes.Gold;
+            text2.Visibility = text2.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         }
 
 
