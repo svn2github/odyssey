@@ -52,6 +52,7 @@
                             <Setter Property="MouseOverHeaderBackground" Value="{StaticResource MouseOverHeaderBackground}"/>
                             <Setter Property="MouseOverHeaderForeground" Value="Black"/>
                             <Setter Property="PressedHeaderBackground" Value="{StaticResource PressedHeaderBackground}"/>
+                            <Setter Property="Margin" Value="8"/>
                         </Style>
                     </ControlTemplate.Resources>
                 </ControlTemplate>

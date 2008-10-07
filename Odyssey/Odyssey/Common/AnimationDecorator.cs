@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Diagnostics;
 
 #region Licence
 // Copyright (c) 2008 Thomas Gerber
@@ -22,6 +23,8 @@ namespace Odyssey.Controls
 {
     public class AnimationDecorator : Decorator
     {
+        private double targetHeight = 0;
+
         static AnimationDecorator()
         {
             // AnimationDecorator.ActualHeightProperty.OverrideMetadata(typeof(AnimationDecorator), new UIPropertyMetadata((double)0.0));
@@ -71,7 +74,7 @@ namespace Odyssey.Controls
         {
             AnimationDecorator expander = d as AnimationDecorator;
             bool expanded = (bool)e.NewValue;
-            expander.DoAnimate(expanded);
+            expander.AnimateExpandedChanged(expanded);
         }
 
 
@@ -106,33 +109,31 @@ namespace Odyssey.Controls
             DependencyProperty.Register("Duration", typeof(Duration), typeof(AnimationDecorator), new UIPropertyMetadata(new Duration(new TimeSpan(0, 0, 0, 400))));
 
 
+        private bool animating = false;
 
         /// <summary>
-        /// Perform the animation.
+        /// Perform the animation when teh IsExpanded has changed.
         /// </summary>
         /// <param name="expanded"></param>
-        private void DoAnimate(bool expanded)
+        private void AnimateExpandedChanged(bool expanded)
         {
             if (Child != null)
             {
                 if (YOffset > 0) YOffset = 0;
                 if (-YOffset > Child.DesiredSize.Height) YOffset = -Child.DesiredSize.Height;
                 DoubleAnimation animation = HeightAnimation;
-                if (animation == null)
-                {
-                    animation = new DoubleAnimation();
-                    animation.DecelerationRatio = 0.9;
-                    animation.Duration = Duration;
-                }
+                if (animation == null) animation = CreateDoubleAnimation();
                 animation.From = null;
                 animation.To = expanded ? 0 : -Child.DesiredSize.Height;
+                animation.Completed += new EventHandler(animation_Completed);
+                animating = true;
                 this.BeginAnimation(AnimationDecorator.YOffsetProperty, animation);
 
                 if (OpacityAnimation)
                 {
                     animation.From = null;
                     animation.To = expanded ? 1 : 0;
-                    this.BeginAnimation(Control.OpacityProperty, animation);
+                    this.BeginAnimation(AnimationDecorator.AnimationOpacityProperty, animation);
                 }
             }
             else
@@ -141,11 +142,68 @@ namespace Odyssey.Controls
             }
         }
 
-
-        protected void SetYOffset(bool expanded)
+        private DoubleAnimation CreateDoubleAnimation()
         {
-            YOffset = expanded ? 0 : -Child.DesiredSize.Height;
+            DoubleAnimation animation = new DoubleAnimation();
+            animation.DecelerationRatio = 0.8;
+            animation.Duration = Duration;
+            return animation;
         }
+
+        void animation_Completed(object sender, EventArgs e)
+        {
+            animating = false;
+        }
+
+
+        /// <summary>
+        /// Perform the animation when the child's height has changed.
+        /// </summary>
+        /// <param name="h"></param>
+        /// <returns></returns>
+        private Double AnimatedResize(Double h)
+        {
+            Double delta = targetHeight - h;
+            DoubleAnimation animation = HeightAnimation;
+            if (animation == null) animation = CreateDoubleAnimation();
+            targetHeight = h;
+            animation.From = delta;
+            animation.To = 0;
+            this.BeginAnimation(AnimationDecorator.HeightOffsetProperty, animation);
+            return delta;
+        }
+
+
+
+
+
+        /// <summary>
+        /// Gets or sets the Opacity for animation. This dependency property can be used to modify the opacity of an outer control.
+        /// </summary>
+        public double AnimationOpacity
+        {
+            get { return (double)GetValue(AnimationOpacityProperty); }
+            set { SetValue(AnimationOpacityProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for AnimationOpacity.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty AnimationOpacityProperty =
+            DependencyProperty.Register("AnimationOpacity", typeof(double), typeof(AnimationDecorator), new UIPropertyMetadata((double)1.0));
+
+
+        /// <summary>
+        /// A helper value for the current state while in animation.
+        /// </summary>
+        internal Double HeightOffset
+        {
+            get { return (Double)GetValue(HeightOffsetProperty); }
+            set { SetValue(HeightOffsetProperty, value); }
+        }
+
+        internal static readonly DependencyProperty HeightOffsetProperty =
+            DependencyProperty.Register("HeightOffset", typeof(Double), typeof(AnimationDecorator), new FrameworkPropertyMetadata((double)0.0,
+                FrameworkPropertyMetadataOptions.AffectsMeasure));
+
 
         /// <summary>
         /// A helper value for the current state while in animation.
@@ -158,9 +216,7 @@ namespace Odyssey.Controls
 
         public static readonly DependencyProperty YOffsetProperty =
             DependencyProperty.Register("YOffset", typeof(Double), typeof(AnimationDecorator),
-            new FrameworkPropertyMetadata(0.0,
-                FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsArrange
-                | FrameworkPropertyMetadataOptions.AffectsMeasure));
+            new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         /// <summary>
         /// Measures the child element of a <see cref="T:System.Windows.Controls.Decorator"/> to prepare for arranging it during the <see cref="M:System.Windows.Controls.Decorator.ArrangeOverride(System.Windows.Size)"/> pass.
@@ -174,49 +230,28 @@ namespace Odyssey.Controls
             if (Child == null) return new Size(0, 0);
 
             Child.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
-            Double h = Child.DesiredSize.Height;
-            Double yOffset = 0;
-            if (this.IsLoaded && IsExpanded && IsVisible)
+            Double childHeight = Child.DesiredSize.Height;
+            Double deltaHeight = 0;
+            if (this.IsLoaded && IsVisible)
             {
-                if (targetHeight != h)
+                if (targetHeight != childHeight)
                 {
-                    yOffset = AnimatedResize(h);
+                    deltaHeight = AnimatedResize(childHeight);
+                    if (animating) AnimateExpandedChanged(IsExpanded);
                 }
             }
-            else
-            {
-                targetHeight = h;
-            }
+            else targetHeight = childHeight;
+
             Size size = new Size();
             size.Width = DesiredSize.Width;
 
-            h += YOffset + yOffset;
-            if (h < 0) h = 0;
-            Height = h;
-            size.Height = h;
-            if (Child != null) Child.IsEnabled = h > 0;
+            childHeight += YOffset + HeightOffset + deltaHeight;
+            if (childHeight < 0) childHeight = 0;
+            size.Height = childHeight;
+            if (Child != null) Child.IsEnabled = childHeight > 0;
             return size;
         }
 
-        private Double AnimatedResize(Double h)
-        {
-            Double yOffset = targetHeight - h;
-            DoubleAnimation animation = HeightAnimation;
-            if (animation == null)
-            {
-                animation = new DoubleAnimation();
-                animation.DecelerationRatio = 0.9;
-                animation.Duration = Duration;
-            }
-            animation.From = yOffset + YOffset;
-            animation.To = 0;
-            targetHeight = h;
-            this.BeginAnimation(AnimationDecorator.YOffsetProperty, animation);
-            return yOffset;
-        }
-
-
-        private double targetHeight = 0;
 
         /// <summary>
         /// Arranges the content of a <see cref="T:System.Windows.Controls.Decorator"/> element.
@@ -236,7 +271,7 @@ namespace Odyssey.Controls
 
             Child.Arrange(new Rect(p, size));
 
-            Double h = Child.DesiredSize.Height + YOffset;
+            Double h = Child.DesiredSize.Height + YOffset + HeightOffset;
             if (h < 0) h = 0;
             size.Height = h;
             return size;

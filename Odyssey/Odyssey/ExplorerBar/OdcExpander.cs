@@ -92,19 +92,21 @@ namespace Odyssey.Controls
 
         public bool IsMinimized
         {
-            get { return (bool)GetValue(MinimizedProperty); }
-            set { SetValue(MinimizedProperty, value); }
+            get { return (bool)GetValue(IsMinimizedProperty); }
+            set { SetValue(IsMinimizedProperty, value); }
         }
 
-        public static readonly DependencyProperty MinimizedProperty =
+        public static readonly DependencyProperty IsMinimizedProperty =
             DependencyProperty.Register("IsMinimized",
             typeof(bool), typeof(OdcExpander),
-            new UIPropertyMetadata(false, IsMinimizedChanged));
+            new UIPropertyMetadata(false, OnMinimizedPropertyChanged));
 
-        public static void IsMinimizedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static void OnMinimizedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            bool minimized = (bool)e.NewValue;
             OdcExpander expander = d as OdcExpander;
-            RoutedEventArgs args = new RoutedEventArgs((bool)e.NewValue ? MinimizedEvent : MaximizedEvent);
+            RoutedEventArgs args = new RoutedEventArgs(minimized ? MinimizedEvent : MaximizedEvent);
+            expander.IsEnabled = !minimized;
             expander.RaiseEvent(args);
         }
 

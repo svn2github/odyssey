@@ -1,54 +1,36 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BreadcrumbWithDataSourceExample", "BreadcrumbWithDataSourceExample\BreadcrumbWithDataSourceExample.csproj", "{A55114A5-6994-4990-8F8B-C09D2D30EE05}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileBrowserExample", "FileBrowser\FileBrowserExample.csproj", "{F41A958B-D4F1-49A3-AECC-570AFA2F1030}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpanderDemo", "ExpanderDemo\ExpanderDemo.csproj", "{A246A0E8-29CA-41CF-982D-04FBD079FC17}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Odyssey.Controls", "Odyssey\Odyssey.Controls.csproj", "{333FDC55-6B47-4A64-A2DF-A4C5823FAC74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demos", "Demos\Demos.csproj", "{4F736E6C-D570-4882-B521-93819C059E82}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 3
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs08.codeplex.com/
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = BreadcrumbWithDataSourceExample\\BreadcrumbWithDataSourceExample.csproj
-		SccProjectName1 = BreadcrumbWithDataSourceExample
-		SccLocalPath1 = BreadcrumbWithDataSourceExample
-		SccProjectUniqueName2 = FileBrowser\\FileBrowserExample.csproj
-		SccProjectName2 = FileBrowser
-		SccLocalPath2 = FileBrowser
-		SccProjectUniqueName3 = ExpanderDemo\\ExpanderDemo.csproj
-		SccProjectName3 = ExpanderDemo
-		SccLocalPath3 = ExpanderDemo
-		SccProjectUniqueName4 = Odyssey\\Odyssey.Controls.csproj
-		SccProjectName4 = Odyssey
-		SccLocalPath4 = Odyssey
+		SccProjectUniqueName1 = Odyssey\\Odyssey.Controls.csproj
+		SccProjectName1 = Odyssey
+		SccLocalPath1 = Odyssey
+		SccProjectUniqueName2 = Demos\\Demos.csproj
+		SccProjectName2 = Demos
+		SccLocalPath2 = Demos
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A55114A5-6994-4990-8F8B-C09D2D30EE05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A55114A5-6994-4990-8F8B-C09D2D30EE05}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A55114A5-6994-4990-8F8B-C09D2D30EE05}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A55114A5-6994-4990-8F8B-C09D2D30EE05}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F41A958B-D4F1-49A3-AECC-570AFA2F1030}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F41A958B-D4F1-49A3-AECC-570AFA2F1030}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F41A958B-D4F1-49A3-AECC-570AFA2F1030}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F41A958B-D4F1-49A3-AECC-570AFA2F1030}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A246A0E8-29CA-41CF-982D-04FBD079FC17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A246A0E8-29CA-41CF-982D-04FBD079FC17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A246A0E8-29CA-41CF-982D-04FBD079FC17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A246A0E8-29CA-41CF-982D-04FBD079FC17}.Release|Any CPU.Build.0 = Release|Any CPU
 		{333FDC55-6B47-4A64-A2DF-A4C5823FAC74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{333FDC55-6B47-4A64-A2DF-A4C5823FAC74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{333FDC55-6B47-4A64-A2DF-A4C5823FAC74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{333FDC55-6B47-4A64-A2DF-A4C5823FAC74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F736E6C-D570-4882-B521-93819C059E82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F736E6C-D570-4882-B521-93819C059E82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F736E6C-D570-4882-B521-93819C059E82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F736E6C-D570-4882-B521-93819C059E82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
