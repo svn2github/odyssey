@@ -74,7 +74,14 @@ namespace Odyssey.Controls
         {
             AnimationDecorator expander = d as AnimationDecorator;
             bool expanded = (bool)e.NewValue;
-            expander.AnimateExpandedChanged(expanded);
+            if (expander.CanAnimate)
+            {
+                expander.AnimateExpandedChanged(expanded);
+            }
+            else
+            {
+                expander.UnanimatedExpandedChanged(expanded);
+            }
         }
 
 
@@ -110,6 +117,15 @@ namespace Odyssey.Controls
 
 
         private bool animating = false;
+
+
+        private void UnanimatedExpandedChanged(bool expanded)
+        {
+            if (Child != null)
+            {
+                YOffset = expanded ? 0 : -Child.DesiredSize.Height;
+            }
+        }
 
         /// <summary>
         /// Perform the animation when teh IsExpanded has changed.
@@ -232,12 +248,15 @@ namespace Odyssey.Controls
             Child.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
             Double childHeight = Child.DesiredSize.Height;
             Double deltaHeight = 0;
-            if (this.IsLoaded && IsVisible)
+            if (this.IsLoaded && IsVisible && CanAnimate)
             {
                 if (targetHeight != childHeight)
                 {
                     deltaHeight = AnimatedResize(childHeight);
-                    if (animating) AnimateExpandedChanged(IsExpanded);
+                    if (animating)
+                    {
+                        AnimateExpandedChanged(IsExpanded);
+                    }
                 }
             }
             else targetHeight = childHeight;
@@ -276,5 +295,19 @@ namespace Odyssey.Controls
             size.Height = h;
             return size;
         }
+
+
+
+        public bool CanAnimate
+        {
+            get { return (bool)GetValue(CanAnimateProperty); }
+            set { SetValue(CanAnimateProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CanAnimate.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CanAnimateProperty =
+            DependencyProperty.Register("CanAnimate", typeof(bool), typeof(AnimationDecorator), new UIPropertyMetadata(true));
+
+
     }
 }

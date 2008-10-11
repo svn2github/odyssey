@@ -20,6 +20,7 @@
         <Setter Property="HeaderBorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="0"/>
         <Setter Property="ShowEllipse" Value="True"/>
+        <Setter Property="BorderThickness" Value="1,0,1,1"/>
         <Setter Property="Padding" Value="8"/>
         <Setter Property="Template">
 
@@ -34,6 +35,7 @@
                                                 ContentTemplate="{TemplateBinding HeaderTemplate}"
                                                 Background="{TemplateBinding HeaderBackground}"
                                                 BorderBrush="{TemplateBinding BorderBrush}"
+                                                     Foreground="{TemplateBinding Foreground}"
                                                 ShowEllipse="{TemplateBinding ShowEllipse}"
                                                 CornerRadius="{TemplateBinding CornerRadius}"
                                                 Image="{TemplateBinding Image}"/>
@@ -42,11 +44,12 @@
                                     Margin="0,-1,0,0"
                                     Background="{TemplateBinding Background}"
                                     SnapsToDevicePixels="True"
-                                        BorderThickness="1,0,1,1"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
                                         Opacity="{Binding ElementName=decorator, Path=AnimationOpacity}"
                                         BorderBrush="{TemplateBinding BorderBrush}">
                                 <local:AnimationDecorator Grid.Row="1"
                                                           x:Name="decorator"
+                                               CanAnimate="{TemplateBinding CanAnimate}"
                                               Duration="{StaticResource animTime}"
                                               MinHeight="{TemplateBinding MinHeight}"
                                               MaxHeight="{TemplateBinding MaxHeight}"

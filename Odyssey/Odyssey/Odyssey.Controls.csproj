@@ -72,6 +72,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Skins\OutlookBar\OutlookBlackSkin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Skins\OutlookBar\OutlookSilverSkin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Skins\OutlookBar\OutlookBlueSkin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Aero.NormalColor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -140,6 +152,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Themes\OutlookBar\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\AeroChrome.cs" />
@@ -153,6 +169,9 @@
     <Compile Include="ExplorerBar\ExplorerBar.cs" />
     <Compile Include="ExplorerBar\OdcExpander.cs" />
     <Compile Include="ExplorerBar\OdcExpanderHeader.cs" />
+    <Compile Include="Common\OdysseySkin.cs" />
+    <Compile Include="OutlookBar\OutlookBar.cs" />
+    <Compile Include="OutlookBar\OutlookSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -166,6 +185,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Themes\OutlookBar\OverflowMenuCreatedEventArgs.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

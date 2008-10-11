@@ -302,5 +302,20 @@ namespace Odyssey.Controls
             DependencyProperty.Register("ShowEllipse", typeof(bool), typeof(OdcExpander), new UIPropertyMetadata(false));
 
 
+
+
+        /// <summary>
+        /// Gets or sets whether animation is possible
+        /// </summary>
+        public bool CanAnimate
+        {
+            get { return (bool)GetValue(CanAnimateProperty); }
+            set { SetValue(CanAnimateProperty, value); }
+        }
+
+        public static readonly DependencyProperty CanAnimateProperty =
+            DependencyProperty.Register("CanAnimate", typeof(bool), typeof(OdcExpander), new UIPropertyMetadata(true));
+
+
     }
 }

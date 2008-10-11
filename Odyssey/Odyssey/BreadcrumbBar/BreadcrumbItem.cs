@@ -30,6 +30,7 @@ using System.Collections;
 #endregion
 namespace Odyssey.Controls
 {
+    //TODO: Rename BreadcrumbItem.Trace to BreadcrumbItem.PathEntry
     /// <summary>
     /// A breadcrumb item that is part of a BreadcrumbBar and contains a BreadcrumbButton and nested child BreadcrumbItems.
     /// </summary>
