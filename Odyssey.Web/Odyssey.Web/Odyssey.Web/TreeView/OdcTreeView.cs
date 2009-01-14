@@ -17,6 +17,12 @@ using System.Collections.Specialized;
 using System.Reflection;
 using Odyssey.Web.TreeView;
 
+#region changelog
+// Version 0.1..2
+// - redesigned CreateChildControls and InstantiateNodes:
+//   previousely, it was not possible to add controls like DropDownList to a Template and keep track of it's state since
+//   the template was always recreated after a PostBack.
+#endregion
 /// TODO: Multiselect (one selected and many marked )
 /// TODO: Drag&Drop
 /// TODO: Designer
@@ -38,6 +44,7 @@ namespace Odyssey.Web
     /// (c) Copyright 2008 by Thomas Gerber
     /// </summary>
     [ToolboxData("<{0}:OdcTreeView runat=server></{0}:OdcTreeView>")]
+    [ParseChildren(true)]
     public class OdcTreeView : HierarchicalDataBoundControl, IScriptControl, IPostBackEventHandler, IPostBackDataHandler, INamingContainer
     {
         internal const string CssStyles = "Odyssey.Web.TreeView.styles.TreeView.css";
@@ -306,6 +313,9 @@ namespace Odyssey.Web
         /// <summary>
         /// Called by the ASP.NET page framework to notify server controls that use composition-based implementation to create any child controls they contain in preparation for posting back or rendering.
         /// </summary>
+        /// <remarks>
+        /// Version 0.1.0.2: Changed the order of method calls to enable controls in a template that require viewstate.
+        /// </remarks>
         protected override void CreateChildControls()
         {
             Debug.WriteLine("CreateChildControls");
@@ -317,14 +327,16 @@ namespace Odyssey.Web
             EnsureNodesPopulated();
             InitContextMenu();
             PerformSelect();
+            DataBind();
+            base.CreateChildControls();
+            EnsureHiddenFieldsLoaded();
 
             // the templates for each node must be instantiated to register an event fired by a template control:
             InstantiateNodes(false);
             InstantiateContextMenu();
 
-            DataBind();
-            base.CreateChildControls();
         }
+
 
         bool selected = false;
 
@@ -458,25 +470,51 @@ namespace Odyssey.Web
         /// Instantiate all nodes of the tree, which means to assign a template to each node.
         /// </summary>
         /// <param name="bind">Specifies whether to bind the nodes.</param>
+        /// <remarks>
+        /// Version 0.1.0.2:
+        /// Changed the order of method calls to enable controls in a template that require viewstate.
+        /// </remarks>
         private void InstantiateNodes(bool bind)
         {
             Debug.WriteLine("InstantiateNodes");
             foreach (KeyValuePair<int, OdcTreeNode> pair in nodesByKey)
             {
                 OdcTreeNode node = pair.Value;
-                OdcTreeNodeContainer container = node.Container;
-                container.Controls.Clear();
-                ITemplate template = node.EditMode ? EditNodeTemplate : NodeTemplate;
-                OdcTreeNodeBinding binding = OnNodeBinding(node, null, node);
-                if (binding != null)
-                {
-                    AttachAndBindNode(node, binding);
-                    if (binding.NodeTemplate != null) template = binding.NodeTemplate;
-                }
-                template.InstantiateIn(container);
-                if (bind) container.DataBind();
+
+                InstantiateNode(node);
+                if (bind) node.Container.DataBind();
             }
         }
+
+        /// <summary>
+        /// Instantiates a single node.
+        /// </summary>
+        /// <param name="node">The node to instantiate</param>
+        /// <remarks>
+        /// Version 0.1.0.2:
+        /// The template is now no longer always recreated, to preserve the viewstate of embedded control in a template, like DropDownList.
+        /// Now the template is only recreated if it has changed after it was first created with CreateChildControls and maybe changed
+        /// due to a method call triggered by a PostBack event.
+        /// </remarks>
+        private void InstantiateNode(OdcTreeNode node)
+        {
+            ITemplate template = node.EditMode ? EditNodeTemplate : NodeTemplate;
+            OdcTreeNodeBinding binding = OnNodeBinding(node, null, node);
+            if (binding != null)
+            {
+                AttachAndBindNode(node, binding);
+                if (binding.NodeTemplate != null) template = binding.NodeTemplate;
+            }
+            if (template != node.Template)
+            {
+                OdcTreeNodeContainer container = node.Container;
+                node.Template = template;
+                container.Controls.Clear();
+                template.InstantiateIn(container);
+            }
+        }
+
+
 
         /// <summary>
         /// Instantiate a template to the context menu if available.
@@ -1375,7 +1413,7 @@ namespace Odyssey.Web
                 // the container must have an id that can be reproduced on postbacks, otherwise controls in the template that cause postbacks will not be recognized:
                 container.ID = "K" + node.Key.ToString();
 
-                container.EnableViewState = false;
+                container.EnableViewState = true; // 0.1.2: this is necassary when adding controls in a Template that require viewstates.
                 node.Container = container;
                 templateItemsByKey.Add(node.Key, container);
                 Controls.Add(container);

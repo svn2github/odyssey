@@ -60,6 +60,15 @@ namespace Odyssey.Web
             CanEdit = true;
         }
 
+        /// <summary>
+        /// Gets or sets the template that is assigned to this node.
+        /// </summary>
+        /// <remarks>
+        /// This property was introduced with Version 0.1.2, to determine when to replate an instantiation of a template
+        /// that was created during CreateChildControls,
+        /// </remarks>
+        public ITemplate Template { get; set; }
+
         #region IStateManager Members
 
         public bool IsTrackingViewState

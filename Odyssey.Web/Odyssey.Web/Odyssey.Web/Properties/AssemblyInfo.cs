@@ -33,8 +33,8 @@ using System.Web.UI;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 [assembly:TagPrefix("Odyssey.Web","odc")]
-[assembly: AssemblyVersion("0.1.1.*")]
-[assembly: AssemblyFileVersion("0.1.1.200")]
+[assembly: AssemblyVersion("0.1.2.*")]
+[assembly: AssemblyFileVersion("0.1.2.200")]
 [assembly: WebResource("Odyssey.Web.TreeView.client.TreeViewControl.js", "text/javascript")]
 [assembly: WebResource("Odyssey.Web.TreeView.client.TreeNode.js", "text/javascript")]
 //[assembly: ScriptResource("Odyssey.Web.TreeViewControl.js", "Odyssey.Web.TreeViewControl", "Odyssey.Web.Resource")]
