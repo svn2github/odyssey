@@ -54,7 +54,7 @@
                     <Button Width="100">Two Buttons</Button>
                 </odc:OutlookBar.OptionButtons>
             </odc:OutlookBar>
-            <odc:OutlookBar x:Name="bar2" DockPanel.Dock="Right" Dock="Right" ShowButtons="False" IsCloseButtonVisible="True" Width="200" Margin="0,4,4,4">
+            <odc:OutlookBar x:Name="bar2" DockPanel.Dock="Right" DockPosition="Right" ShowButtons="False" IsCloseButtonVisible="True" Width="200" Margin="0,4,4,4">
                 <odc:OutlookBar.Sections>
                     <odc:OutlookSection Header="To-Do Bar">
                         <odc:OutlookSection.Content>

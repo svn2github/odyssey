@@ -17,6 +17,15 @@ using System.Diagnostics;
 using System.Collections;
 using System.ComponentModel;
 
+#region changelog
+// Version 1.3.17
+//
+// -  do not catch the SizeChanged event in design mode:
+//     suggested by maze1610 http://www.codeplex.com/odyssey/WorkItem/View.aspx?WorkItemId=1074
+// - renamed Property Dock to DockPosition.
+//     suggested by maze1610 http://www.codeplex.com/odyssey/WorkItem/View.aspx?WorkItemId=1075
+//     thanx for your help.
+#endregion
 namespace Odyssey.Controls
 {
     //UNDONE: Section.Content sometimes not visible when IsMaximized has changed. 
@@ -32,6 +41,7 @@ namespace Odyssey.Controls
         private Collection<OutlookSection> maximizedSections;
         private Collection<OutlookSection> minimizedSections;
         private FrameworkElement minimizedButtonContainer;
+
 
         public OutlookBar()
             : base()
@@ -50,7 +60,14 @@ namespace Odyssey.Controls
             minimizedSections = new Collection<OutlookSection>();
             sections = new ObservableCollection<OutlookSection>();
             sections.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler(SectionsCollectionChanged);
-            this.SizeChanged += new SizeChangedEventHandler(OutlookBar_SizeChanged);
+
+            // do not catch the SizeChanged event in design mode:
+            // suggested by maze1610 http://www.codeplex.com/odyssey/WorkItem/View.aspx?WorkItemId=1074:
+
+            if (!DesignerProperties.GetIsInDesignMode(this))
+            {
+                this.SizeChanged += new SizeChangedEventHandler(OutlookBar_SizeChanged);
+            }
         }
 
         void OutlookBar_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -93,7 +110,7 @@ namespace Odyssey.Controls
             Control c = e.OriginalSource as Control;
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                if (Dock == HorizontalAlignment.Left)
+                if (DockPosition == HorizontalAlignment.Left)
                 {
                     ResizeFromRight(e);
                 }
@@ -201,7 +218,6 @@ namespace Odyssey.Controls
                 skin.Source = uri;
                 this.Resources = skin;
             }
-
         }
 
         /// <summary>
@@ -489,14 +505,18 @@ namespace Odyssey.Controls
         /// Gets or sets how to align template of the OutlookBar.
         /// Currently, only Left or Right is supported!
         /// </summary>
-        public HorizontalAlignment Dock
+        /// <remarks>
+        /// This property has been renamed from Dock to DockPosition due to a suggestion from maze6210:
+        /// http://www.codeplex.com/odyssey/WorkItem/View.aspx?WorkItemId=1075
+        /// </remarks>
+        public HorizontalAlignment DockPosition
         {
-            get { return (HorizontalAlignment)GetValue(DockProperty); }
-            set { SetValue(DockProperty, value); }
+            get { return (HorizontalAlignment)GetValue(DockPositionProperty); }
+            set { SetValue(DockPositionProperty, value); }
         }
 
-        public static readonly DependencyProperty DockProperty =
-            DependencyProperty.Register("Dock", typeof(HorizontalAlignment), typeof(OutlookBar), new UIPropertyMetadata(HorizontalAlignment.Left));
+        public static readonly DependencyProperty DockPositionProperty =
+            DependencyProperty.Register("DockPosition", typeof(HorizontalAlignment), typeof(OutlookBar), new UIPropertyMetadata(HorizontalAlignment.Left));
 
         private static readonly DependencyPropertyKey MaximizedSectionsPropertyKey =
             DependencyProperty.RegisterReadOnly("MaximizedSections", typeof(Collection<OutlookSection>), typeof(OutlookBar), new UIPropertyMetadata(null));
@@ -746,6 +766,7 @@ namespace Odyssey.Controls
         {
             get { return resizeCommand; }
         }
+        private static RoutedUICommand resizeCommand = new RoutedUICommand("Resize", "ResizeCommand", typeof(OutlookBar));
 
         /// <summary>
         /// Close the OutlookBar
@@ -757,7 +778,6 @@ namespace Odyssey.Controls
         private static RoutedUICommand collapseCommand = new RoutedUICommand("Collapse", "CollapseCommand", typeof(OutlookBar));
         private static RoutedUICommand startDraggingCommand = new RoutedUICommand("Drag", "StartDraggingCommand", typeof(OutlookBar));
         private static RoutedUICommand showPopupCommand = new RoutedUICommand("ShowPopup", "ShowPopupCommand", typeof(OutlookBar));
-        private static RoutedUICommand resizeCommand = new RoutedUICommand("Resize", "ResizeCommand", typeof(OutlookBar));
         private static RoutedUICommand closeCommand = new RoutedUICommand("Close", "CloseCommand", typeof(OutlookBar));
 
 

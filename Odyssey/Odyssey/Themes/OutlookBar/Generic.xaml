@@ -27,7 +27,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ButtonBase}">
                     <Border Background="{TemplateBinding Background}"
-                            Width="{TemplateBinding Width}"
+                            Width="{TemplateBinding ActualWidth}"
                             Height="{TemplateBinding Height}"
                             Focusable="False"
                             x:Name="border"  BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{DynamicResource BorderBrush}" >
@@ -289,14 +289,14 @@
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMaximized" Value="True"/>
-                                <Condition Property="Dock" Value="Left"/>
+                                <Condition Property="DockPosition" Value="Left"/>
                             </MultiTrigger.Conditions>
                             <Setter TargetName="expandPath" Property="Data" Value="M3,0 L0,3 3,6 M6,0 L3,3 6,6"/>
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMaximized" Value="False"/>
-                                <Condition Property="Dock" Value="Right"/>
+                                <Condition Property="DockPosition" Value="Right"/>
                             </MultiTrigger.Conditions>
                             <Setter TargetName="expandPath" Property="Data" Value="M3,0 L0,3 3,6 M6,0 L3,3 6,6"/>
                         </MultiTrigger>
@@ -308,7 +308,7 @@
                             <Setter TargetName="minimizedButtons" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="closeButton" Property="Visibility" Value="Collapsed"/>
                         </Trigger>
-                        <Trigger Property="Dock" Value="Right">
+                        <Trigger Property="DockPosition" Value="Right">
                             <Setter TargetName="PART_Popup" Property="Placement" Value="Left"/>
                             <Setter TargetName="resizeButton" Property="DockPanel.Dock" Value="Left"/>
                         </Trigger>

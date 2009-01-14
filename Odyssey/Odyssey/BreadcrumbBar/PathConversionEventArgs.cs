@@ -22,6 +22,7 @@ namespace Odyssey.Controls
     /// </summary>
     public class PathConversionEventArgs:RoutedEventArgs
     {
+        //TODO: Rename PathConverionMode to LogicalToVisual and VisualToLogical
         /// <summary>
         /// Specifies what property to convert.
         /// </summary>

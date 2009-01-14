@@ -376,11 +376,16 @@ namespace Odyssey.Controls
             BreadcrumbItem result = item as BreadcrumbItem;
             if (result == null)
             {
+                //Stopwatch sw = Stopwatch.StartNew();
                 result = CreateItem(item);
+                //Debug.WriteLine("Create: " + sw.ElapsedMilliseconds.ToString());
                 if (result != null)
                 {
                     AddLogicalChild(result);
+                //    Debug.WriteLine("Logic: " + sw.ElapsedMilliseconds.ToString());
                     result.ApplyTemplate();
+                  //  sw.Stop();
+                  //  Debug.WriteLine("Apply: " + sw.ElapsedMilliseconds.ToString());
                 }
             }
             return result;

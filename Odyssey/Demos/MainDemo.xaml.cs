@@ -16,6 +16,8 @@ using System.Windows.Media.Animation;
 
 namespace Demos
 {
+    //BUGFIX: Corrected a glitch when the SubItems of a Breadrumb where reopened. This caused the SelectedItem to be set to null and therefore alls trails after the breadcrumb where removed.
+
     /// <summary>
     /// Interaction logic for Window1.xaml
     /// </summary>
@@ -80,44 +82,57 @@ namespace Demos
         }
 
         /// <summary>
+        /// Gets a collection of all drives on the computer.
+        /// </summary>
+        private static IEnumerable<string> GetDrives(string separatorString)
+        {
+            int separatorLength = separatorString.Length;
+            var folders = from drive in System.IO.Directory.GetLogicalDrives() select drive.EndsWith(separatorString) ? drive.Remove(drive.Length - separatorLength) : drive;
+            return folders.AsEnumerable();
+        }
+
+        /// <summary>
         /// Populate the Items of the specified BreadcrumbItem with the sub folders if necassary.
         /// </summary>
         /// <param name="item"></param>
         private static void PopulateFolders(BreadcrumbItem item)
         {
+            List<FolderItem> folderItems = GetFolderItemsFromBreadcrumb(item);
+            item.ItemsSource = folderItems;
+        }
+
+        /// <summary>
+        /// Gets a list of FolderItems that are the subfolders of the specified BreadcrumbItem.
+        /// </summary>
+        private static List<FolderItem> GetFolderItemsFromBreadcrumb(BreadcrumbItem item)
+        {
             BreadcrumbBar bar = item.BreadcrumbBar;
             string path = bar.PathFromBreadcrumbItem(item);
             string trace = item.TraceValue;
+            string[] subFolders;
             if (trace.Equals("Computer"))
             {
-                string[] dirs = System.IO.Directory.GetLogicalDrives();
-                foreach (string s in dirs)
-                {
-                    string dir = s;
-                    if (s.EndsWith(bar.SeparatorString)) dir = s.Remove(s.Length - bar.SeparatorString.Length, bar.SeparatorString.Length);
-                    FolderItem fi = new FolderItem();
-                    fi.Folder = dir;
-
-                    item.Items.Add(fi);
-                }
+                subFolders = GetDrives(bar.SeparatorString).ToArray();
             }
             else
             {
                 try
                 {
-                    string[] paths = System.IO.Directory.GetDirectories(path + "\\");
-                    foreach (string s in paths)
-                    {
-                        string file = System.IO.Path.GetFileName(s);
-                        FolderItem fi = new FolderItem();
-                        fi.Folder = file;
-                        item.Items.Add(fi);
-                    }
+                    subFolders = (from dir in System.IO.Directory.GetDirectories(path + "\\") select System.IO.Path.GetFileName(dir)).ToArray();
                 }
-                catch { }
+                catch
+                {
+                    //maybe we don't have access!
+                    subFolders = new string[] { };
+                }
             }
+            List<FolderItem> folderItems = (from folder in subFolders orderby folder select new FolderItem { Folder = folder }).ToList();
+            return folderItems;
         }
 
+        /// <summary>
+        /// Convert the path from visual to logical or vice versa:
+        /// </summary>
         private void BreadcrumbBar_PathConversion(object sender, PathConversionEventArgs e)
         {
             if (e.Mode == PathConversionEventArgs.ConversionMode.DisplayToEdit)
@@ -146,6 +161,9 @@ namespace Demos
             }
         }
 
+        /// <summary>
+        /// Show a progress bar animation for demonstation purpose.
+        /// </summary>
         private void RefreshClick(object sender, RoutedEventArgs e)
         {
             DoubleAnimation da = new DoubleAnimation(100, new Duration(new TimeSpan(0, 0, 2)));
@@ -164,9 +182,20 @@ namespace Demos
             // only repopulate, if the BreadcrumbItem is dynamically generated which means, item.Data is a  pointer to itself:
             if (!(item.Data is BreadcrumbItem))
             {
-                item.Items.Clear();
-                PopulateFolders(item);
+                UpdateFolderItems(item);
             }
+        }
+
+        /// <summary>
+        /// Update the list of Subfolders from a BreadcrumbItem.
+        /// </summary>
+        private void UpdateFolderItems(BreadcrumbItem item)
+        {
+            List<FolderItem> actualFolders = GetFolderItemsFromBreadcrumb(item);
+            List<FolderItem> currentFolders = item.ItemsSource as List<FolderItem>;
+            currentFolders.Clear();
+            currentFolders.AddRange(actualFolders);
+
         }
 
         public void ShowStaticBreadcrumbBar(object sender, RoutedEventArgs e)

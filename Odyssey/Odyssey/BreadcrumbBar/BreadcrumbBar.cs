@@ -18,6 +18,12 @@ using System.Collections.ObjectModel;
 using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
 
+#region changelog
+// Version 1.3.17:
+// - preserved underscores for headers.
+//   reported by bigbigllama on http://www.codeproject.com/KB/tree/WPFBreadcrumbBar.aspx
+//   thanx for your help.
+#endregion
 #region Licence
 // Copyright (c) 2008 Thomas Gerber
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
@@ -32,6 +38,7 @@ using System.Windows.Markup;
 namespace Odyssey.Controls
 {
 
+    ///TODO: Enable async popuplation on demand.
     /// <summary>
     /// A breadcrumb bar the contains breadcrumb items, a dropdown control, additional buttons and a progress bar.
     /// </summary>
@@ -644,7 +651,9 @@ namespace Odyssey.Controls
                     MenuItem menuItem = new MenuItem();
                     menuItem.Tag = trace;
                     BreadcrumbItem bcItem = item.ContainerFromItem(trace);
-                    menuItem.Header = bcItem.TraceValue;
+
+                    // preserve underscores:
+                    menuItem.Header = bcItem.TraceValue.Replace("_", "__");
                     menuItem.Click += new RoutedEventHandler(menuItem_Click);
                     menuItem.Icon = GetImage(bcItem != null ? bcItem.Image : null);
                     if (trace == RootItem.SelectedItem) menuItem.FontWeight = FontWeights.Bold;

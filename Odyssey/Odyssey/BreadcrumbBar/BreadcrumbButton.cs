@@ -175,15 +175,19 @@ namespace Odyssey.Controls
         }
 
 
+        //TODO: Menu needs too long to render if there are too many items (> 20000).
         void contextMenu_Opened(object sender, RoutedEventArgs e)
         {
             contextMenu.Items.Clear();
             contextMenu.ItemTemplate = ItemTemplate;
             contextMenu.ItemTemplateSelector = ItemTemplateSelector;
+
+        //    List<MenuItem> menuItems = new List<MenuItem>();
             foreach (object item in Items)
             {
                 if (!(item is MenuItem) && !(item is Separator))
                 {
+                    
                     MenuItem menuItem = new MenuItem();
                     menuItem.DataContext = item;
                     BreadcrumbItem bi = item as BreadcrumbItem;

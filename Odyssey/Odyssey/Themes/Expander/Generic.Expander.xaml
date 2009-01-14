@@ -7,6 +7,15 @@
  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.-->
+<!--
+    Changelog
+    Version 1.3.17
+    
+    Changed Width="{TemplateBinding Width}" to Width="{TemplateBinding ActualWidth}" to enable text wrapping.
+    Found by chaiguy1337:
+    http://www.codeproject.com/KB/WPF/WPFExplorerBar.aspx?fid=1527421&select=2850083#xx2850083xx
+    thanx for your help.
+    -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:local="clr-namespace:Odyssey.Controls"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
