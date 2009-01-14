@@ -22,6 +22,7 @@ using Odyssey.Web.TreeView;
 // - redesigned CreateChildControls and InstantiateNodes:
 //   previousely, it was not possible to add controls like DropDownList to a Template and keep track of it's state since
 //   the template was always recreated after a PostBack.
+// - using yield return instead of populating a list. for GetAllNodes().
 #endregion
 /// TODO: Multiselect (one selected and many marked )
 /// TODO: Drag&Drop
@@ -396,7 +397,7 @@ namespace Odyssey.Web
                 }
             }
         }
-        
+
         /// <summary>
         /// Attach and bind all values from OdcTreeNode to the OdcTreeNode 
         /// </summary>
@@ -1321,17 +1322,27 @@ namespace Odyssey.Web
         /// Gets all nested nodes from this TreeView.
         /// </summary>
         /// <returns>A collection of all nested nodes.</returns>
+        /// <remarks>
+        /// Version 0.1.0.2:
+        /// changed from creating a List<OdcTreeNode/> to using yield return to gather the data.
+        /// </remarks>
         public IEnumerable<OdcTreeNode> GetAllNodes()
         {
-            List<OdcTreeNode> nodes = new List<OdcTreeNode>();
-            foreach (OdcTreeNode node in Nodes)
-            {
-                nodes.Add(node);
-                AddSubNodes(node.ChildNodes, nodes);
-            }
-
-            return nodes;
+            return IterateSubNodes(Nodes);
         }
+
+        private IEnumerable<OdcTreeNode> IterateSubNodes(OdcTreeNodeCollection nodes)
+        {
+            foreach (OdcTreeNode node in nodes)
+            {
+                yield return node;
+                foreach (OdcTreeNode sub in IterateSubNodes(node.ChildNodes))
+                {
+                    yield return sub;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Adds a  OdcTreeNode and all nested sub-nodes to a collection
