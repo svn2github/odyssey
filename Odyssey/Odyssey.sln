@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Odyssey.Controls", "Odyssey\Odyssey.Controls.csproj", "{333FDC55-6B47-4A64-A2DF-A4C5823FAC74}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Odyssey", "Odyssey\Odyssey.csproj", "{333FDC55-6B47-4A64-A2DF-A4C5823FAC74}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demos", "Demos\Demos.csproj", "{4F736E6C-D570-4882-B521-93819C059E82}"
 EndProject
@@ -11,12 +11,12 @@ Global
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs08.codeplex.com/
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = Odyssey\\Odyssey.Controls.csproj
-		SccProjectName1 = Odyssey
-		SccLocalPath1 = Odyssey
-		SccProjectUniqueName2 = Demos\\Demos.csproj
-		SccProjectName2 = Demos
-		SccLocalPath2 = Demos
+		SccProjectUniqueName1 = Demos\\Demos.csproj
+		SccProjectName1 = Demos
+		SccLocalPath1 = Demos
+		SccProjectUniqueName2 = Odyssey\\Odyssey.csproj
+		SccProjectName2 = Odyssey
+		SccLocalPath2 = Odyssey
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

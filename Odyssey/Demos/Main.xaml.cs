@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Demos.Ribbon;
 
 namespace Demos
 {
@@ -35,10 +36,16 @@ namespace Demos
             explorerBar.ShowDialog();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void BreadcrumbBarClick(object sender, RoutedEventArgs e)
         {
             BreadcrumbDS bds = new BreadcrumbDS();
             bds.ShowDialog();
+        }
+
+        private void RibbonBarClick(object sender, RoutedEventArgs e)
+        {
+            RibbonDemo ribbonDemo = new RibbonDemo();
+            ribbonDemo.Show();
         }
     }
 }

@@ -83,6 +83,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Ribbon\RibbonDemo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -116,6 +120,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Ribbon\RibbonDemo.xaml.cs">
+      <DependentUpon>RibbonDemo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Ribbon\ThumbnailConverter.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -127,21 +135,46 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Odyssey\Odyssey.Controls.csproj">
-      <Project>{333FDC55-6B47-4A64-A2DF-A4C5823FAC74}</Project>
-      <Name>Odyssey.Controls</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="AlignTableCellMiddleCenterHS.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="img\cut16.png" />
+    <Resource Include="img\cut32.png" />
+    <Resource Include="img\delete16.png" />
+    <Resource Include="img\delete32.png" />
+    <Resource Include="img\favorites16.png" />
+    <Resource Include="img\favorites32.png" />
+    <Resource Include="img\folder16.png" />
+    <Resource Include="img\folder32.png" />
+    <Resource Include="img\history16.png" />
+    <Resource Include="img\history32.png" />
+    <Resource Include="img\home16.png" />
+    <Resource Include="img\home32.png" />
+    <Resource Include="img\mail16.png" />
+    <Resource Include="img\mail32.png" />
+    <Resource Include="img\paste16.png" />
+    <Resource Include="img\paste32.png" />
+    <Resource Include="img\props16.png" />
+    <Resource Include="img\props32.png" />
+    <Resource Include="img\save16.png">
+    </Resource>
+    <Resource Include="img\save32.png" />
+    <Resource Include="img\search16.png" />
+    <Resource Include="img\search32.png" />
+    <Resource Include="img\undo16.png" />
+    <Resource Include="img\undo32.png" />
     <Content Include="openfolderHS.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Resource Include="Web.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Odyssey\Odyssey.csproj">
+      <Project>{333FDC55-6B47-4A64-A2DF-A4C5823FAC74}</Project>
+      <Name>Odyssey</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

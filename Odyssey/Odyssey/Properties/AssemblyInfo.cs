@@ -13,7 +13,7 @@ using System.Windows.Markup;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("tomssoftware.net")]
 [assembly: AssemblyProduct("Odyssey")]
-[assembly: AssemblyCopyright("Copyright ©  2008 Thomas Gerber")]
+[assembly: AssemblyCopyright("Copyright ©  2008-2009 Thomas Gerber")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -53,6 +53,6 @@ using System.Windows.Markup;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.17.*")]
-[assembly: AssemblyFileVersion("1.3.17.1")]
+[assembly: AssemblyVersion("1.3.18.*")]
+[assembly: AssemblyFileVersion("1.3.18.20")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
