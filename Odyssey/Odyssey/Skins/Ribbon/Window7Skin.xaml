@@ -85,8 +85,8 @@
         <Setter Property="InnerBorderThickness" Value="0"/>
         <Setter Property="BorderThickness" Value="0,1,0,1"/>
     </Style>
-    
-    
+
+
 
     <LinearGradientBrush x:Key="{ComponentResourceKey odc:Skins, RibbonTabBrush}" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="#FFF7FBFF" Offset="0"/>
@@ -94,7 +94,7 @@
     </LinearGradientBrush>
 
     <!--It looks better with this brush to remain transparent, though the original windows 7 theme has this color:-->
-    <!--<SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, RibbonBackgroundBrush}" Color="#FFDFE9F5"/>-->    
+    <!--<SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, RibbonBackgroundBrush}" Color="#FFDFE9F5"/>-->
 
     <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, RibbonBorderBrush}" Color="#FFBAC9DB"/>
 
@@ -183,6 +183,11 @@
             <Trigger Property="RenderPressed" Value="True">
                 <Setter Property="BorderBrush" Value="#FF5D6F88"/>
             </Trigger>
+            <!--Make the button transparent if the RibbonWindow is not active:-->
+            <DataTrigger  Binding="{Binding IsWindowActive,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type odc:RibbonWindow}}}" Value="False">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="#FF838EA8"/>
+            </DataTrigger>
         </Style.Triggers>
     </Style>
 
@@ -197,6 +202,11 @@
             <Trigger Property="RenderPressed" Value="True">
                 <Setter Property="BorderBrush" Value="#FF431422"/>
             </Trigger>
+            <!--Make the button transparent if the RibbonWindow is not active:-->
+            <DataTrigger  Binding="{Binding IsWindowActive,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type odc:RibbonWindow}}}" Value="False">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="#FF838EA8"/>
+            </DataTrigger>
         </Style.Triggers>
     </Style>
 
@@ -204,6 +214,21 @@
            BasedOn="{StaticResource DefaultCloseButtonStyle}">
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Margin" Value="2,0,2,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type odc:RibbonButton}">
+                    <odc:RibbonChrome 
+                        RenderMouseOver="{TemplateBinding IsMouseOver}" 
+                        RenderPressed="{TemplateBinding IsPressed}" 
+                        HorizontalContentAlignment="Center"
+                        CornerRadius="3">
+                        <Path Data="M0,0L3,0L5,2L7,0L10,0L10,1L7,4L10,7L10,8L7,8L5,6L3,8L0,8L0,7L3,4L0,1L0,0z"  RenderOptions.BitmapScalingMode="HighQuality"
+                              StrokeThickness="1" SnapsToDevicePixels="False" 
+                              Stroke="#FF535666" Fill="White" Stretch="None"/>
+                    </odc:RibbonChrome>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Style.Resources>
             <Style TargetType="{x:Type odc:RibbonChrome}" BasedOn="{StaticResource WindowButtonCloseChromeStyle}"/>
         </Style.Resources>
@@ -213,8 +238,25 @@
            BasedOn="{StaticResource DefaultMinimizeButtonStyle}">
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Margin" Value="2,0,2,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type odc:RibbonButton}">
+                    <odc:RibbonChrome 
+                        RenderMouseOver="{TemplateBinding IsMouseOver}" 
+                        RenderPressed="{TemplateBinding IsPressed}" 
+                        HorizontalContentAlignment="Center"
+                        CornerRadius="3">
+                        <Path Data="M0,8L10,8 L10,5L0,5Z"  RenderOptions.BitmapScalingMode="HighQuality"
+                              StrokeThickness="1" SnapsToDevicePixels="False" 
+                              Stroke="#FF535666" Fill="White" Stretch="None"/>
+                    </odc:RibbonChrome>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Style.Resources>
-            <Style TargetType="{x:Type odc:RibbonChrome}" BasedOn="{StaticResource WindowButtonChromeStyle}"/>
+            <Style TargetType="{x:Type odc:RibbonChrome}" BasedOn="{StaticResource WindowButtonChromeStyle}">
+
+            </Style>
         </Style.Resources>
     </Style>
 
@@ -222,6 +264,21 @@
            BasedOn="{StaticResource DefaultMaximizeButtonStyle}">
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Margin" Value="2,0,2,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type odc:RibbonButton}">
+                    <odc:RibbonChrome 
+                        RenderMouseOver="{TemplateBinding IsMouseOver}" 
+                        RenderPressed="{TemplateBinding IsPressed}" 
+                        HorizontalContentAlignment="Center"
+                        CornerRadius="3">
+                        <Path Data="M0,0 L10,0 L10,8 L0,8L0,0 M3,3 L7,3 L7,5 L3,5 L3,3z"  RenderOptions.BitmapScalingMode="HighQuality"
+                              StrokeThickness="1" SnapsToDevicePixels="False" 
+                              Stroke="#FF535666" Fill="White" Stretch="None"/>
+                    </odc:RibbonChrome>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Style.Resources>
             <Style TargetType="{x:Type odc:RibbonChrome}" BasedOn="{StaticResource WindowButtonChromeStyle}"/>
         </Style.Resources>
@@ -231,6 +288,26 @@
            BasedOn="{StaticResource DefaultRestoreButtonStyle}">
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Margin" Value="2,0,2,0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type odc:RibbonButton}">
+                    <odc:RibbonChrome 
+                        RenderMouseOver="{TemplateBinding IsMouseOver}" 
+                        RenderPressed="{TemplateBinding IsPressed}" 
+                        HorizontalContentAlignment="Center"
+                        CornerRadius="3">
+                        <Grid>
+                            <Path Data="M4,0L11,0L11,7L4,7L4,0M6,3L9,3L9,5L6,5L6,3Z"  RenderOptions.BitmapScalingMode="HighQuality"
+                              StrokeThickness="1" SnapsToDevicePixels="False" 
+                              Stroke="#FF535666" Fill="White" Stretch="None"/>
+                            <Path Data="M0,3L7,3 L7,10 L0,10L0,3 M2,6L5,6L5,8L2,8L2,6Z"  RenderOptions.BitmapScalingMode="HighQuality"
+                              StrokeThickness="1" SnapsToDevicePixels="False" 
+                              Stroke="#FF535666" Fill="White" Stretch="None"/>
+                        </Grid>
+                    </odc:RibbonChrome>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Style.Resources>
             <Style TargetType="{x:Type odc:RibbonChrome}" BasedOn="{StaticResource WindowButtonChromeStyle}"/>
         </Style.Resources>

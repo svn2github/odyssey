@@ -78,6 +78,7 @@
                 <StackPanel Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" x:Name="bottomBorder" Visibility="Collapsed" Focusable="False">
                     <Border Height="1" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource {ComponentResourceKey odc:Skins, BorderBrush}}"/>
                     <Border Height="1" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource {ComponentResourceKey odc:Skins, LightBorderBrush}}"/>
+                    
                     <Popup IsOpen="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent},  Mode=OneWay}" 
                     PopupAnimation="Fade"   Focusable="False"  StaysOpen="True" VerticalOffset="-2"
                   Placement="Bottom" x:Name="PART_Popup"  AllowsTransparency="True">

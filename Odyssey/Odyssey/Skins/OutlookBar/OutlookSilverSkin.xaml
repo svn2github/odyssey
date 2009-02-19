@@ -1,13 +1,13 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-   xmlns:local="clr-namespace:Odyssey.Controls"
+   xmlns:odc="clr-namespace:Odyssey.Controls"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush Color="#FF656870" x:Key="BorderBrush"/>
-    <SolidColorBrush Color="#FF656870" x:Key="ImageBrush"/>
-    <SolidColorBrush Color="#FFE9ECF0" x:Key="LightBackgroundBrush"/>
-    <SolidColorBrush Color="#FF16419E" x:Key="ForegroundBrush"/>
+    <SolidColorBrush Color="#FF656870" x:Key="{ComponentResourceKey odc:Skins,BorderBrush}"/>
+    <SolidColorBrush Color="#FF656870" x:Key="{ComponentResourceKey odc:Skins,ImageBrush}"/>
+    <SolidColorBrush Color="#FFE9ECF0" x:Key="{ComponentResourceKey odc:Skins,LightBackgroundBrush}"/>
+    <SolidColorBrush Color="#FF16419E" x:Key="{ComponentResourceKey odc:Skins,ForegroundBrush}"/>
 
-    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" x:Key="HighlightedExpanderHeaderBrush">
+    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0" x:Key="{ComponentResourceKey odc:Skins,HighlightedExpanderHeaderBrush}">
         <LinearGradientBrush.GradientStops>
             <GradientStop Color="#FFDADFE6" Offset="0"/>
             <GradientStop Color="White" Offset="0.5"/>
@@ -15,14 +15,14 @@
         </LinearGradientBrush.GradientStops>
     </LinearGradientBrush>
 
-    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" x:Key="OutlookbarHeaderBrush">
+    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" x:Key="{ComponentResourceKey odc:Skins,OutlookbarHeaderBrush}">
         <LinearGradientBrush.GradientStops>
             <GradientStop Color="#FFFFFFFF" Offset="0"/>
             <GradientStop Color="#FFDADFE6" Offset="1"/>
         </LinearGradientBrush.GradientStops>
     </LinearGradientBrush>
 
-    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" x:Key="SectionButtonGradientBrush">
+    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" x:Key="{ComponentResourceKey odc:Skins,SectionButtonGradientBrush}">
         <LinearGradientBrush.GradientStops>
             <GradientStop Color="#FFEBEEFA" Offset="0"/>
             <GradientStop Color="#FFD6DAE4" Offset="0.4"/>
@@ -31,8 +31,8 @@
         </LinearGradientBrush.GradientStops>
     </LinearGradientBrush>
 
-    <SolidColorBrush Color="#FFFFAB3F" x:Key="SelectedButtonSolidBrush"/>
-    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" x:Key="SelectedButtonGradientBrush">
+    <SolidColorBrush Color="#FFFFAB3F" x:Key="{ComponentResourceKey odc:Skins,SelectedButtonSolidBrush}"/>
+    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" x:Key="{ComponentResourceKey odc:Skins,SelectedButtonGradientBrush}">
         <LinearGradientBrush.GradientStops>
             <GradientStop Color="#FFFFFEE4" Offset="0"/>
             <GradientStop Color="#FFFFBB6E" Offset="0.4"/>
@@ -41,8 +41,8 @@
         </LinearGradientBrush.GradientStops>
     </LinearGradientBrush>
 
-    <SolidColorBrush Color="#FFFFD76A" x:Key="HighlightButtonSolidBrush"/>
-    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" x:Key="HighlightButtonGradientBrush">
+    <SolidColorBrush Color="#FFFFD76A" x:Key="{ComponentResourceKey odc:Skins,HighlightButtonSolidBrush}"/>
+    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" x:Key="{ComponentResourceKey odc:Skins,HighlightButtonGradientBrush}">
         <LinearGradientBrush.GradientStops>
             <GradientStop Color="#FFFFFCDE" Offset="0"/>
             <GradientStop Color="#FFFFEAAD" Offset="0.4"/>

@@ -196,29 +196,9 @@ namespace Odyssey.Controls
         {
             base.OnInitialized(e);
             ApplySections();
-            ApplySkin();
         }
 
-        protected void ApplySkin()
-        {
-            string skinName;
-            switch (Skin)
-            {
-                case OdysseySkin.OutllookBlue: skinName = "OutlookBlueSkin"; break;
-                case OdysseySkin.OutlookSilver: skinName = "OutlookSilverSkin"; break;
-                case OdysseySkin.OutlookBlack: skinName = "OutlookBlackSkin"; break;
-                default: skinName = "OutlookBlueSkin"; break;
-            }
 
-            if (!string.IsNullOrEmpty(skinName))
-            {
-                skinName = string.Format("pack://application:,,,/Odyssey;Component/Skins/OutlookBar/{0}.xaml", skinName);
-                Uri uri = new Uri(skinName, UriKind.Absolute);
-                ResourceDictionary skin = new ResourceDictionary();
-                skin.Source = uri;
-                this.Resources = skin;
-            }
-        }
 
         /// <summary>
         /// Determine the collection of MinimizedSections and MaximizedSections depending on the MaxVisibleButtons Property.
@@ -893,33 +873,40 @@ namespace Odyssey.Controls
         public static readonly DependencyProperty NavigationPaneTextProperty =
             DependencyProperty.Register("NavigationPaneText", typeof(object), typeof(OutlookBar), new UIPropertyMetadata("Navigation Pane"));
 
-
+        [Obsolete("Use SkinManager instead.")]
+        public enum OdysseySkin
+        {
+            Invalid
+        }
 
         /// <summary>
         /// Gets or sets the desired skin.
-        /// </summary>            
+        /// </summary>    
+        [Obsolete("Use SkinManager instead.")]
         public OdysseySkin Skin
         {
-            get { return (OdysseySkin)GetValue(SkinProperty); }
-            set { SetValue(SkinProperty, value); }
+            get { return OdysseySkin.Invalid; }
+            set { throw new InvalidOperationException("Skin property is obsolete. Use SkinManager instead."); }
+            //get { return (OdysseySkin)GetValue(SkinProperty); }
+            //set { SetValue(SkinProperty, value); }
         }
 
-        public static readonly DependencyProperty SkinProperty =
-            DependencyProperty.Register("Skin", typeof(OdysseySkin), typeof(OutlookBar),
-            new FrameworkPropertyMetadata(OdysseySkin.Default, FrameworkPropertyMetadataOptions.AffectsRender, SkinPropertyPropertyChanged));
+        //public static readonly DependencyProperty SkinProperty =
+        //    DependencyProperty.Register("Skin", typeof(OdysseySkin), typeof(OutlookBar),
+        //    new FrameworkPropertyMetadata(OdysseySkin.Default, FrameworkPropertyMetadataOptions.AffectsRender, SkinPropertyPropertyChanged));
 
 
-        private static void SkinPropertyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            OutlookBar bar = (OutlookBar)d;
-            OdysseySkin skin = (OdysseySkin)e.NewValue;
-            bar.OnSkinChanged(skin);
-        }
+        //private static void SkinPropertyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        //{
+        //    OutlookBar bar = (OutlookBar)d;
+        //    OdysseySkin skin = (OdysseySkin)e.NewValue;
+        //    bar.OnSkinChanged(skin);
+        //}
 
-        protected virtual void OnSkinChanged(OdysseySkin skin)
-        {
-            ApplySkin();
-        }
+        //protected virtual void OnSkinChanged(OdysseySkin skin)
+        //{
+        //   // ApplySkin();
+        //}
 
     }
 }

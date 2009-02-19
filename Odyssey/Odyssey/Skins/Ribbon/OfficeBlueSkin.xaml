@@ -191,7 +191,17 @@
     </Style>
 
     <Style TargetType="{x:Type odc:RibbonButton}" x:Key="DefaultMinimizeButtonStyle">
-        <Setter Property="Foreground" Value="{DynamicResource {ComponentResourceKey odc:Skins, WindowButtonPenColor}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {ComponentResourceKey odc:Skins, WindowButtonPenColor}}"/>    
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <Path Data="M0,6,8,6"  RenderOptions.BitmapScalingMode="HighQuality"
+                              StrokeThickness="2" SnapsToDevicePixels="True" 
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type odc:RibbonButton}}}"
+                              StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" Stretch="None"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type odc:RibbonButton}">
@@ -199,12 +209,7 @@
                         RenderMouseOver="{TemplateBinding IsMouseOver}" 
                         RenderPressed="{TemplateBinding IsPressed}" 
                         HorizontalContentAlignment="Center"
-                        CornerRadius="3">
-                        <Path Data="M0,6,8,6"  RenderOptions.BitmapScalingMode="HighQuality"
-                              StrokeThickness="2" SnapsToDevicePixels="True" 
-                              Stroke="{TemplateBinding Foreground}"
-                              StrokeStartLineCap="Flat" StrokeEndLineCap="Flat" Stretch="None"/>
-                    </odc:RibbonChrome>
+                        CornerRadius="3" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -110,7 +110,6 @@ namespace Odyssey.Controls
             popup = GetTemplateChild(partPopup) as Popup;
             if (popup != null)
             {
-                popup.StaysOpen = false;
                 popup.Opened += new EventHandler(OnPopupOpened);
                 popup.Closed += new EventHandler(OnPopupClosed);
             }
@@ -119,27 +118,11 @@ namespace Odyssey.Controls
         }
 
 
-        protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
-        {
-            base.OnLostKeyboardFocus(e);
-            if (!this.IsKeyboardFocusWithin)
-            {
-                DependencyObject focused = Keyboard.FocusedElement as DependencyObject;
-                if (focused==null || !this.IsAncestorOf(focused))
-                {
-                    IsDropDownOpen = false;
-                }
-            }
-        }
-
-
-
         public static RibbonGroup PoppedUpGroup;
 
         void OnPopupClosed(object sender, EventArgs e)
         {
             if (PoppedUpGroup.popup == sender) PoppedUpGroup = null;
-            Mouse.Capture(null);
         }
 
         void OnPopupOpened(object sender, EventArgs e)
@@ -149,7 +132,23 @@ namespace Odyssey.Controls
                 PoppedUpGroup.popup.IsOpen = false;
             }
             PoppedUpGroup = this;
-           Mouse.Capture(this, CaptureMode.SubTree);
+
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (IsMinimized)
+            {
+                switch (e.Key)
+                {
+                    case Key.Space:
+                    case Key.Down:
+                        IsDropDownOpen = true;
+                        e.Handled = true;
+                        break;
+                }
+            }
+            base.OnKeyDown(e);
         }
 
 
@@ -162,7 +161,13 @@ namespace Odyssey.Controls
 
         // Using a DependencyProperty as the backing store for IsDropDownOpen.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsDropDownOpenProperty =
-            DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(RibbonGroup), new UIPropertyMetadata(false));
+            DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(RibbonGroup), 
+            new UIPropertyMetadata(false, DropDownOpenPropertyChanged));
+
+        private static void DropDownOpenPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            RibbonGroup g = (RibbonGroup)o;
+        }
 
 
 

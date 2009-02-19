@@ -72,6 +72,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Skins\BlackSkin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Skins\BlueSkin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Skins\OutlookBar\OutlookBlackSkin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -84,13 +92,53 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Skins\Ribbon\VistaSkin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Skins\SilverSkin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Skins\VistaSkin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Skins\Win7Skin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Aero.NormalColor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Themes\BreadcrumbBar\AeroChrome.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\BreadcrumbBar\BreadcrumbButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\BreadcrumbBar\BreadcrumbItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\BreadcrumbBar\Brushes.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\BreadcrumbBar\ButtonTemplates.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\BreadcrumbBar\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\BreadcrumbBar\ProgressBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Classic.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -153,6 +201,18 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\OutlookBar\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\OutlookBar\OutlookBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\OutlookBar\OutlookSection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\OutlookBar\ToggleButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -248,6 +308,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Themes\Ribbon\RibbonGroupDropDownButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Ribbon\RibbonHLChromeStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -313,7 +377,6 @@
     <Compile Include="ExplorerBar\ExplorerBar.cs" />
     <Compile Include="ExplorerBar\OdcExpander.cs" />
     <Compile Include="ExplorerBar\OdcExpanderHeader.cs" />
-    <Compile Include="Common\OdysseySkin.cs" />
     <Compile Include="OutlookBar\OutlookBar.cs" />
     <Compile Include="OutlookBar\OutlookSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -345,9 +408,9 @@
     <Compile Include="Ribbon\Classes\RibbonWindowCornerMode.cs" />
     <Compile Include="Ribbon\Classes\RoundedCornerConverter.cs" />
     <Compile Include="Ribbon\Classes\RoundedCornerResizeConverter.cs" />
-    <Compile Include="Ribbon\Classes\SkinId.cs" />
-    <Compile Include="Ribbon\Classes\SkinManager.cs" />
-    <Compile Include="Ribbon\Classes\Skins.cs" />
+    <Compile Include="Common\SkinId.cs" />
+    <Compile Include="Common\SkinManager.cs" />
+    <Compile Include="Common\Skins.cs" />
     <Compile Include="Ribbon\Classes\TwoLineConverter.cs" />
     <Compile Include="Ribbon\Classes\TwoLineTextConverter.cs" />
     <Compile Include="Ribbon\Controls\InternalGroupPanel.cs" />

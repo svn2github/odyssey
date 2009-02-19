@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Odyssey.Controls;
+using Odyssey.Controls.Classes;
 
 namespace Demos
 {
@@ -46,18 +47,18 @@ namespace Demos
 
         private void BlueSkinClick(object sender, RoutedEventArgs e)
         {
-            bar2.Skin = bar.Skin = OdysseySkin.OutllookBlue;
+            SkinManager.SkinId = SkinId.OfficeBlue;
            
         }
 
         private void SilverSkinClick(object sender, RoutedEventArgs e)
         {
-            bar2.Skin = bar.Skin = OdysseySkin.OutlookSilver;
+            SkinManager.SkinId = SkinId.OfficeSilver;
         }
 
         private void BlackSkinClick(object sender, RoutedEventArgs e)
         {
-            bar2.Skin = bar.Skin = OdysseySkin.OutlookBlack;
+            SkinManager.SkinId = SkinId.OfficeBlack;
         }
 
 

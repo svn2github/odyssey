@@ -65,6 +65,7 @@
                     <odc:RibbonToggleButton Content="Enable Glass" odc:RibbonBar.MinSize="Large" LargeImage="/img/search32.png"  
                                             IsChecked="{Binding IsGlassEnabled, ElementName=window}"/>
                     <odc:RibbonSeparator/>
+                    <odc:RibbonButton Content="Vista" odc:RibbonBar.MinSize="Large" SmallImage="/img/save16.png" LargeImage="/img/Save32.png" Click="VistaClick"/>
                     <odc:RibbonButton Content="Windows 7" odc:RibbonBar.MinSize="Large" SmallImage="/img/save16.png" LargeImage="/img/Save32.png" Click="Win7Click"/>
                     <odc:RibbonButton Content="Office Blue" odc:RibbonBar.MinSize="Medium" SmallImage="/img/home16.png" LargeImage="/img/home32.png" Click="OfficeBlueClick"/>
                     <odc:RibbonButton Content="Office Silver" odc:RibbonBar.MinSize="Medium"  SmallImage="/img/paste16.png" LargeImage="/img/paste32.png" Click="OfficeSilverClick"/>

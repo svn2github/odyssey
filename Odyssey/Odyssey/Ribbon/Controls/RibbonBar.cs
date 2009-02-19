@@ -50,6 +50,7 @@ namespace Odyssey.Controls
             : base()
         {
             AddHandler(LoadedEvent, new RoutedEventHandler(OnLoaded));
+
             AddHandler(Button.ClickEvent, new RoutedEventHandler(OnChildClick));
             AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(OnMenuItemClick2));
             AddHandler(RibbonComboBox.DropDownClosedEvent, new RoutedEventHandler(OnMenuItemClick));
@@ -63,6 +64,9 @@ namespace Odyssey.Controls
         /// </summary>
         private void OnMenuItemClick(object sender, RoutedEventArgs e)
         {
+            FrameworkElement fe = e.OriginalSource as FrameworkElement;
+            if (fe != null && fe.TemplatedParent is RibbonGroup) return;
+            if (fe != null && fe.TemplatedParent !=null) return;
             if (popup != null && !(e.OriginalSource is RibbonDropDownButton)) popup.IsOpen = false;
             IsMenuOpen = false;
             RibbonGroup.CloseOpenedPopup();
@@ -73,6 +77,9 @@ namespace Odyssey.Controls
         /// </summary>
         private void OnMenuItemClick2(object sender, RoutedEventArgs e)
         {
+            FrameworkElement fe = e.OriginalSource as FrameworkElement;
+            if (fe != null && fe.TemplatedParent is RibbonGroup) return;
+            if (fe != null && fe.TemplatedParent != null) return;
             if (popup != null) popup.IsOpen = false;
             IsMenuOpen = false;
             RibbonGroup.CloseOpenedPopup();
@@ -394,11 +401,15 @@ namespace Odyssey.Controls
         {
             if (popup == null) return;
             if (!CanMinimize) return;
+            FrameworkElement fe = e.OriginalSource as FrameworkElement;
+            if (fe != null && fe.TemplatedParent != null) return;
             if (Mouse.Captured != this && popup != null)
             {
                 UIElement child = this.popup.Child;
                 if (e.OriginalSource == this)
                 {
+                    FrameworkElement captured = Mouse.Captured as FrameworkElement;
+                    if (captured != null && captured.TemplatedParent != null) return;
                     if ((Mouse.Captured == null) || !child.IsAncestorOf(Mouse.Captured as DependencyObject))
                     {
                         this.IsExpanded = false;
@@ -990,7 +1001,12 @@ namespace Odyssey.Controls
         }
 
         public static readonly DependencyProperty IsMenuOpenProperty =
-            DependencyProperty.Register("IsMenuOpen", typeof(bool), typeof(RibbonBar), new UIPropertyMetadata(false));
+            DependencyProperty.Register("IsMenuOpen", typeof(bool), typeof(RibbonBar), new UIPropertyMetadata(false, MenuOpenPropertyChanged));
+
+        private static void MenuOpenPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            if (((bool)e.NewValue) == false) Mouse.Capture(null);
+        }
 
         [AttachedPropertyBrowsableForChildren]
         public static RibbonSize GetSize(DependencyObject obj)

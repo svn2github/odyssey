@@ -38,13 +38,40 @@ namespace Odyssey.Controls
         public RibbonDropDownButton()
         {
             AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(menuItemClicked));
-            AddHandler(RibbonButton.ClickEvent, new RoutedEventHandler(menuItemClicked));
+            AddHandler(RibbonButton.ClickEvent, new RoutedEventHandler(buttonClick));
+            AddHandler(RibbonComboBox.DropDownClosedEvent, new RoutedEventHandler(menuItemClicked));
+        }
+
+        private void buttonClick(object sender, RoutedEventArgs e)
+        {
+            if (IsDropDownPressed)
+            {
+                if (e.OriginalSource == this) return;
+                if (IsAncestorType(e.OriginalSource, typeof(RibbonComboBox))) return;
+                IsDropDownPressed = false;
+            }
         }
 
         private void menuItemClicked(object sender, RoutedEventArgs e)
         {
-            if (e.OriginalSource == this) return;
-            IsDropDownPressed = false;
+            if (IsDropDownPressed)
+            {
+                if (e.OriginalSource == this) return;
+                //                if (IsAncestorType(e.OriginalSource,typeof(RibbonComboBox))) return;
+                IsDropDownPressed = false;
+            }
+        }
+
+        private bool IsAncestorType(object child, Type type)
+        {
+            FrameworkElement parent = child as FrameworkElement;
+            while (parent != null)
+            {
+                if (parent.TemplatedParent != null && parent.TemplatedParent.GetType() == type) return true;
+                if (parent.GetType() == type) return true;
+                parent = parent.Parent as FrameworkElement;
+            }
+            return false;
         }
 
 
@@ -101,6 +128,7 @@ namespace Odyssey.Controls
 
         protected virtual void OnPopupClosed(object sender, EventArgs e)
         {
+            isDropDownOpen = false;
             IsDropDownPressed = false;
             RoutedEventArgs args = new RoutedEventArgs(RibbonDropDownButton.PopupClosedEvent);
             RaiseEvent(args);
@@ -160,7 +188,11 @@ namespace Odyssey.Controls
         public bool IsDropDownPressed
         {
             get { return (bool)GetValue(IsDropDownPressedProperty); }
-            set { SetValue(IsDropDownPressedProperty, value); }
+            set
+            {
+                isDropDownOpen = value;
+                SetValue(IsDropDownPressedProperty, value);
+            }
         }
 
         // Using a DependencyProperty as the backing store for IsDropDown.  This enables animation, styling, binding, etc...
@@ -199,31 +231,38 @@ namespace Odyssey.Controls
             if (e.Key == Key.Escape) { IsDropDownPressed = false; e.Handled = true; }
         }
 
+        private bool isDropDownOpen = false;
 
         private static RibbonDropDownButton DroppedDownButton;
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            EnsurePopupRemainsOnMouseUp();
-            if (this.IsAncestorOf(e.OriginalSource as DependencyObject))
+            if (!IsDropDownPressed)
             {
-                ToggleDropDownState();
-                e.Handled = true;
+                EnsurePopupRemainsOnMouseUp();
+                if (this.IsAncestorOf(e.OriginalSource as DependencyObject))
+                {
+                    ToggleDropDownState();
+                    e.Handled = true;
+                }
             }
             base.OnMouseLeftButtonDown(e);
         }
 
 
+
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
-            e.Handled = true;
+            //  e.Handled = true;
             EnsurePopupDoesNotStayOpen();
+            isDropDownOpen = IsDropDownPressed;
             base.OnMouseLeftButtonUp(e);
         }
 
         protected virtual void ToggleDropDownState()
         {
-            IsDropDownPressed ^= true;
+            isDropDownOpen ^= true;
+            SetValue(IsDropDownPressedProperty, isDropDownOpen);
         }
 
 

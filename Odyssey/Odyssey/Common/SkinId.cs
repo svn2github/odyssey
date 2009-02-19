@@ -15,6 +15,7 @@ namespace Odyssey.Controls.Classes
         OfficeBlue,
         OfficeSilver,
         OfficeBlack,
-        Windows7
+        Windows7,
+        Vista
     }
 }

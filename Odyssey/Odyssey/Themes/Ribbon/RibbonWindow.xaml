@@ -95,9 +95,9 @@
                 <Setter Property="CornerRadius" Value="0" TargetName="innerBorder"/>
             </Trigger>
             <Trigger Property="IsWindowActive" Value="False">
-                <Setter Property="Opacity" Value="0.65" TargetName="Minimize"/>
+                <!--<Setter Property="Opacity" Value="0.65" TargetName="Minimize"/>
                 <Setter Property="Opacity" Value="0.65" TargetName="Maximize"/>
-                <Setter Property="Opacity" Value="0.65" TargetName="Close"/>
+                <Setter Property="Opacity" Value="0.65" TargetName="Close"/>-->
                 <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey odc:Skins, RibbonInactiveTitleBrush}}" TargetName="PART_Title"/>
                 <Setter Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey odc:Skins, RibbonInactiveBorderBrush}}" TargetName="border"/>
             </Trigger>

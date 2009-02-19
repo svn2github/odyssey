@@ -30,6 +30,11 @@ namespace Demos.Ribbon
             SkinManager.SkinId = SkinId.Windows7;
         }
 
+        private void VistaClick(object sender, RoutedEventArgs e)
+        {
+            SkinManager.SkinId = SkinId.Vista;
+        }
+
         private void OfficeBlueClick(object sender, RoutedEventArgs e)
         {
             SkinManager.SkinId = SkinId.OfficeBlue;
@@ -80,5 +85,6 @@ namespace Demos.Ribbon
         {
             MessageBox.Show("Launcher");
         }
+
     }
 }

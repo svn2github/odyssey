@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Demos.Outlook"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:odc="http://schemas.odyssey.com/wpf"
+    xmlns:odc="clr-namespace:Odyssey.Controls;assembly=Odyssey"
     Title="Outlook Bar" Height="500" Width="640">
     <Grid>
         <Grid.RowDefinitions>
@@ -65,7 +65,10 @@
                     </odc:OutlookSection>
                 </odc:OutlookBar.Sections>
             </odc:OutlookBar>
-            <Border Background="LightSteelBlue" BorderBrush="SteelBlue" BorderThickness="1" Margin="0,4,0,4"  >
+            <Border Background="{DynamicResource {ComponentResourceKey odc:Skins, RibbonWindowBgBrush}}" 
+                    BorderBrush="{DynamicResource {ComponentResourceKey odc:Skins, RibbonBorderBrush}}" 
+                    TextBlock.Foreground="{DynamicResource {ComponentResourceKey odc:Skins, WindowForegroundBrush}}" 
+                    BorderThickness="1" Margin="0,4,0,4"  >
                 <TextBlock x:Name="label" Text="Custom Area" TextBlock.FontStyle="Italic" TextBlock.FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Border>
         </DockPanel>

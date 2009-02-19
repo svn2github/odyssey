@@ -15,6 +15,7 @@
                     <DockPanel HorizontalAlignment="Stretch" Focusable="False" >
                         <ToggleButton x:Name="button" Margin="0,-2,-2,-2" DockPanel.Dock="Right" Width="16" Template="{StaticResource InternalToggleButton}" 
                                           IsChecked="{Binding IsDropDownOpen,RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"
+                                      ClickMode="Press"
                                         Focusable="False"
                                           HorizontalContentAlignment="Center" >
                             <Image Margin="2,0,2,0" Stretch="None" VerticalAlignment="Center" HorizontalAlignment="Center" Focusable="False"
@@ -36,16 +37,16 @@
                        MinWidth="{Binding ActualWidth, ElementName=border}"
                                         Placement="Bottom" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" AllowsTransparency="True" 
                                        Name="PART_Popup" Focusable="False">
-                    <mwt:SystemDropShadowChrome Color="#00FFFFFF" Name="Shdw" 
+                    <mwt:SystemDropShadowChrome Color="#71000000" Name="Shdw"  Margin="0,0,5,5"
                                             MinWidth="{Binding FrameworkElement.ActualWidth, ElementName=button}" 
                                             MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
                         <Border BorderThickness="1,1,1,1" BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" Name="DropDownBorder">
                             <StackPanel>
-                                <ContentPresenter Content="{TemplateBinding DropDownHeader}" ContentTemplate="{TemplateBinding DropDownHeaderTemplate}"/>
+                                <ContentControl Content="{TemplateBinding DropDownHeader}" ContentTemplate="{TemplateBinding DropDownHeaderTemplate}"/>
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="True">
                                     <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" KeyboardNavigation.DirectionalNavigation="Contained" Margin="1"  />
                                 </ScrollViewer>
-                                <ContentPresenter Content="{TemplateBinding DropDownFooter}" ContentTemplate="{TemplateBinding DropDownFooterTemplate}"/>
+                                <ContentControl Content="{TemplateBinding DropDownFooter}" ContentTemplate="{TemplateBinding DropDownFooterTemplate}"/>
                             </StackPanel>
                         </Border>
                     </mwt:SystemDropShadowChrome>

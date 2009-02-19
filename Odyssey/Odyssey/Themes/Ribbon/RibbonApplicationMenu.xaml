@@ -7,29 +7,30 @@
         <ResourceDictionary Source="pack://application:,,,/Odyssey;Component/Themes/Ribbon/DefaultRibbonButtonBrushes.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/Odyssey;Component/Themes/Ribbon/RibbonAppMenuItem.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/Odyssey;Component/Themes/Ribbon/RibbonApplicationButton.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/Odyssey;Component/Themes/Ribbon/RibbonGroupDropDownButton.xaml"/>
     </ResourceDictionary.MergedDictionaries>
+
 
     <ControlTemplate TargetType="{x:Type odc:RibbonApplicationMenu}" x:Key="RibbonApplicationMenuControlTemplate">
         <Grid Margin="0">
-            <odc:RibbonToggleButton x:Name="PART_AppButton" SnapsToDevicePixels="True"
-                                                  ClickMode="Release"
+            <odc:RibbonDropDownButton x:Name="PART_AppButton" SnapsToDevicePixels="True"
                                                  IsFlat="False" Width="37" Height="37"
-                                                 IsChecked="{Binding IsOpen, RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"
+                                                 PopupAnimation="Fade"
+                                                 IsChecked="{Binding IsOpen, RelativeSource={RelativeSource TemplatedParent},Mode=OneWay}"
+                                                 IsDropDownPressed="{Binding IsOpen, RelativeSource={RelativeSource TemplatedParent},Mode=OneWayToSource}"
                                                 Template="{DynamicResource {ComponentResourceKey odc:Skins, ApplicationMenuButtonTemplate}}"
                                                 Foreground="White"
                                                 odc:RibbonBar.Size="Medium" 
                                                 SmallImage="{TemplateBinding MenuButtonImage}"
                                                 CornerRadius="0,5,0,0"
                                                 Background="{DynamicResource {ComponentResourceKey odc:Skins, RibbonMenuButtonBrush}}">
-                <Image Width="24" Height="24" Source="{TemplateBinding MenuButtonImage}"/>
-            </odc:RibbonToggleButton>
-            <Popup  VerticalOffset="-21"   Focusable="False"
-                               StaysOpen="False"  x:Name="PART_AppMenuPopup"
-                               PopupAnimation="Fade" Placement="Bottom" AllowsTransparency="True">
-                <mwt:SystemDropShadowChrome Margin="0,0,5,5"  Color="#81000000" Name="Shdw2" CornerRadius="4"  Focusable="False">
+                <odc:RibbonDropDownButton.Content>
+                    <Image Width="24" Height="24" Source="{TemplateBinding MenuButtonImage}"/>
+                </odc:RibbonDropDownButton.Content>
+                <odc:RibbonDropDownButton.DropDownHeader>
                     <Grid Focusable="False">
                         <Border Background="{DynamicResource {ComponentResourceKey odc:Skins, RibbonBarControlBrush}}" BorderBrush="{DynamicResource {ComponentResourceKey odc:Skins, BorderBrush}}" Focusable="False" 
-                                    Padding="5"  BorderThickness="1" CornerRadius="0,4,4,4">
+                                    Padding="5,18,5,5"  BorderThickness="1" CornerRadius="0,4,4,4">
                             <StackPanel Focusable="False">
                                 <Border BorderBrush="White" BorderThickness="1" Focusable="False">
                                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" 
@@ -45,47 +46,55 @@
                                                 <ItemsPresenter/>
                                             </Border>
                                             <StackPanel Grid.Column="1" Grid.Row="0" x:Name="PART_RecentItemsList">
-                                                <ContentPresenter HorizontalAlignment="Stretch" Content="{TemplateBinding MenuHeader}" ContentTemplate="{TemplateBinding MenuHeaderTemplate}"/>
+                                                <ContentControl HorizontalAlignment="Stretch" Content="{TemplateBinding MenuHeader}" ContentTemplate="{TemplateBinding MenuHeaderTemplate}"/>
                                                 <ContentControl Content="{TemplateBinding RecentItemsList}" 
                                                             ContentTemplate="{TemplateBinding RecentItemsListTemplate}" 
                                                             VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-                                                <ContentPresenter HorizontalAlignment="Stretch" Content="{TemplateBinding Footer}" ContentTemplate="{TemplateBinding FooterTemplate}"/>
+                                                <ContentControl HorizontalAlignment="Stretch" Content="{TemplateBinding Footer}" ContentTemplate="{TemplateBinding FooterTemplate}"/>
                                             </StackPanel>
 
                                         </Grid>
                                     </Border>
                                 </Border>
-                                <ContentPresenter Content="{TemplateBinding Footer}" ContentTemplate="{TemplateBinding FooterTemplate}"/>
+                                <ContentControl Content="{TemplateBinding Footer}" ContentTemplate="{TemplateBinding FooterTemplate}"/>
                             </StackPanel>
                         </Border>
 
                         <!--Adding a second ApplicationMenu inside the popup to make the visual effect, that the menu button appears before the popup,
                         which is truly done using 2 separate buttons:-->
                         <Border Margin="4.5,-21,0,0">
-                            <odc:RibbonToggleButton  x:Name="PART_AppButtonClone" SnapsToDevicePixels="True"
-                                                 IsFlat="False" Width="37" Height="37" ClickMode="Release" VerticalAlignment="Top" HorizontalAlignment="Left"
-                                                 IsChecked="{Binding IsOpen, RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"
+                            <odc:RibbonDropDownButton  x:Name="PART_AppButtonClone" SnapsToDevicePixels="True" IsEnabled="False"
+                                                 IsCheckable="True" 
+                                                 IsChecked="true"
+                                                 IsFlat="False" Width="37" Height="37"  VerticalAlignment="Top" HorizontalAlignment="Left"
                                                 Template="{DynamicResource {ComponentResourceKey odc:Skins, ApplicationMenuButtonTemplate}}"
                                                 Foreground="White"
                                                 odc:RibbonBar.Size="Medium" 
                                                 SmallImage="{TemplateBinding MenuButtonImage}"
                                                 CornerRadius="0,5,0,0"
                                                 Background="{DynamicResource {ComponentResourceKey odc:Skins, RibbonMenuButtonBrush}}">
-                                <Image Width="24" Height="24" Source="{TemplateBinding MenuButtonImage}"/>
-                            </odc:RibbonToggleButton>
+                                <odc:RibbonDropDownButton.Content>
+                                    <Image Width="24" Height="24" Source="{TemplateBinding MenuButtonImage}"/>
+                                </odc:RibbonDropDownButton.Content>
+                            </odc:RibbonDropDownButton>
                         </Border>
 
                     </Grid>
-                </mwt:SystemDropShadowChrome>
-            </Popup>
+                </odc:RibbonDropDownButton.DropDownHeader>
+            </odc:RibbonDropDownButton>
         </Grid>
-
-
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsOpen" Value="False">
+                <Setter Property="IsDropDownPressed" Value="False" TargetName="PART_AppButton"/>
+                <Setter Property="IsDropDownPressed" Value="False" TargetName="PART_AppButtonClone"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
         <ControlTemplate.Resources>
             <Style TargetType="{x:Type odc:RibbonChrome}" BasedOn="{StaticResource RibbonChromeStyle}"/>
         </ControlTemplate.Resources>
 
     </ControlTemplate>
+
 
     <Style TargetType="{x:Type odc:RibbonApplicationMenu}">
         <Setter Property="Width" Value="48"/>

@@ -34,6 +34,7 @@ namespace Odyssey.Controls.Classes
            dict.Remove(OfficeBlack);
            dict.Remove(OfficeSilver);
            dict.Remove(WindowsSeven);
+           dict.Remove(Vista);
            switch (skin)
            {
                case SkinId.OfficeBlack:
@@ -47,6 +48,10 @@ namespace Odyssey.Controls.Classes
                case SkinId.Windows7:
                    dict.Add(WindowsSeven);
                    break;
+
+               case SkinId.Vista:
+                   dict.Add(Vista);
+                   break;
            }           
         }
 
@@ -58,7 +63,7 @@ namespace Odyssey.Controls.Classes
                 if (officeSilver == null)
                 {
                     ResourceDictionary dictionary = new ResourceDictionary();
-                    dictionary.Source = new Uri("/Odyssey;Component/Skins/Ribbon/OfficeSilverSkin.xaml", UriKind.Relative);
+                    dictionary.Source = new Uri("/Odyssey;Component/Skins/SilverSkin.xaml", UriKind.Relative);
                     officeSilver = dictionary;
                 }
                 return officeSilver;
@@ -73,7 +78,7 @@ namespace Odyssey.Controls.Classes
                 if (officeBlack == null)
                 {
                     ResourceDictionary dictionary = new ResourceDictionary();
-                    dictionary.Source = new Uri("/Odyssey;Component/Skins/Ribbon/OfficeBlackSkin.xaml", UriKind.Relative);
+                    dictionary.Source = new Uri("/Odyssey;Component/Skins/BlackSkin.xaml", UriKind.Relative);
                     officeBlack = dictionary;
                 }
                 return officeBlack;
@@ -88,10 +93,25 @@ namespace Odyssey.Controls.Classes
                 if (windowSeven == null)
                 {
                     ResourceDictionary dictionary = new ResourceDictionary();
-                    dictionary.Source = new Uri("/Odyssey;Component/Skins/Ribbon/Window7Skin.xaml", UriKind.Relative);
+                    dictionary.Source = new Uri("/Odyssey;Component/Skins/Win7Skin.xaml", UriKind.Relative);
                     windowSeven = dictionary;
                 }
                 return windowSeven;
+            }
+        }
+
+        private static ResourceDictionary vista;
+        public static ResourceDictionary Vista
+        {
+            get
+            {
+                if (vista == null)
+                {
+                    ResourceDictionary dictionary = new ResourceDictionary();
+                    dictionary.Source = new Uri("/Odyssey;Component/Skins/VistaSkin.xaml", UriKind.Relative);
+                    vista = dictionary;
+                }
+                return vista;
             }
         }
         

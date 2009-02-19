@@ -143,5 +143,18 @@ namespace Odyssey.Controls
 
         private static readonly DependencyProperty IsSelectedProperty = IsSelectedPropertyKey.DependencyProperty;
 
+        /// <summary>
+        /// Select the first tab in the RibbonBar of the contextual tab set when the control is clicked:
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            if (this.tabs != null && this.tabs.Count > 0)
+            {
+                RibbonBar.SelectedTabItem = tabs[0];
+            }
+        }
+
     }
 }

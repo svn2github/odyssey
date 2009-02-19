@@ -17,10 +17,10 @@
     thanx for your help.
     -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:local="clr-namespace:Odyssey.Controls"
+    xmlns:odc="clr-namespace:Odyssey.Controls"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Duration x:Key="animTime">0:0:0.4</Duration>
-    <Style TargetType="{x:Type local:OdcExpander}">
+    <Style TargetType="{x:Type odc:OdcExpander}">
         <Setter Property="Background" Value="#40808080"/>
         <Setter Property="BorderBrush" Value="#60404040"/>
         <Setter Property="HeaderBackground" Value="#40A0A0A0"/>
@@ -34,10 +34,10 @@
         <Setter Property="Template">
 
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:OdcExpander}">
+                <ControlTemplate TargetType="{x:Type odc:OdcExpander}">
                     <Border>
                         <StackPanel SnapsToDevicePixels="True">
-                            <local:OdcExpanderHeader x:Name="header"  SnapsToDevicePixels="True"
+                            <odc:OdcExpanderHeader x:Name="header"  SnapsToDevicePixels="True"
                                                  BorderThickness="{TemplateBinding HeaderBorderThickness}"
                                                 Content="{TemplateBinding Header}" 
                                                  IsChecked="{Binding RelativeSource={RelativeSource TemplatedParent},Path=IsExpanded}"
@@ -56,7 +56,7 @@
                                         BorderThickness="{TemplateBinding BorderThickness}"
                                         Opacity="{Binding ElementName=decorator, Path=AnimationOpacity}"
                                         BorderBrush="{TemplateBinding BorderBrush}">
-                                <local:AnimationDecorator Grid.Row="1"
+                                <odc:AnimationDecorator Grid.Row="1"
                                                           x:Name="decorator"
                                                CanAnimate="{TemplateBinding CanAnimate}"
                                               Duration="{StaticResource animTime}"
@@ -70,7 +70,7 @@
                                               Content="{TemplateBinding Content}" 
                                               ContentTemplate="{TemplateBinding ContentTemplate}"/>
                                     </Border>
-                                </local:AnimationDecorator>
+                                </odc:AnimationDecorator>
                             </Border>
                         </StackPanel>
                         <Border.LayoutTransform>
@@ -89,7 +89,7 @@
                             </MultiTrigger.Conditions>
                             <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource TemplatedParent},Path=PressedHeaderBackground}" TargetName="header"/>
                         </MultiTrigger>
-                        <EventTrigger RoutedEvent="local:OdcExpander.MaximizedEvent">
+                        <EventTrigger RoutedEvent="odc:OdcExpander.MaximizedEvent">
                             <EventTrigger.Actions>
                                 <BeginStoryboard>
                                     <Storyboard Storyboard.TargetProperty="ScaleY" >
@@ -98,7 +98,7 @@
                                 </BeginStoryboard>
                             </EventTrigger.Actions>
                         </EventTrigger>
-                        <EventTrigger RoutedEvent="local:OdcExpander.MinimizedEvent">
+                        <EventTrigger RoutedEvent="odc:OdcExpander.MinimizedEvent">
                             <EventTrigger.Actions>
                                 <BeginStoryboard>
                                     <Storyboard Storyboard.TargetProperty="ScaleY" >

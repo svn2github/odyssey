@@ -124,8 +124,8 @@ namespace Odyssey.Controls
 
         private Popup popup;
         private FrameworkElement recentItemsList;
-        private ToggleButton appButton;
-        private ToggleButton appButtonClone;
+        private RibbonDropDownButton appButton;
+        private RibbonDropDownButton appButtonClone;
 
         public override void OnApplyTemplate()
         {
@@ -139,26 +139,38 @@ namespace Odyssey.Controls
             popup = GetTemplateChild(partApplicationMenuPopup) as Popup;
             if (popup != null)
             {
+                popup.StaysOpen = true;
                 popup.Opened += new EventHandler(OnPopupOpenend);
                 popup.Closed += new EventHandler(OnPopupClosed);
             }
 
-            appButton = GetTemplateChild(partAppButton) as ToggleButton;
-            appButtonClone = GetTemplateChild(partAppButtonClone) as ToggleButton;
+            appButton = GetTemplateChild(partAppButton) as RibbonDropDownButton;
+            appButtonClone = GetTemplateChild(partAppButtonClone) as RibbonDropDownButton;
+            appButton.PopupOpened += new RoutedEventHandler(appButton_PopupOpened);
 
             recentItemsList = GetTemplateChild(partRecentItemsList) as FrameworkElement;
+        }
+
+
+        void appButton_PopupOpened(object sender, RoutedEventArgs e)
+        {
+            AdjustApplicationButtons();
+            IsOpen = true;
         }
 
 
         protected virtual void OnPopupClosed(object sender, EventArgs e)
         {
             IsOpen = false;
+            Mouse.Capture(null);
         }
+
 
         protected virtual void OnPopupOpenend(object sender, EventArgs e)
         {
             AdjustApplicationButtons();
             IsOpen = true;
+            Mouse.Capture(this, CaptureMode.SubTree);
         }
 
         /// <summary>
@@ -167,7 +179,7 @@ namespace Odyssey.Controls
         private void AdjustApplicationButtons()
         {
             if (appButtonClone != null && appButton != null)
-            {                
+            {
                 Point p = appButton.PointToScreen(new Point());
                 Point p2 = appButtonClone.PointToScreen(new Point());
 

@@ -21,7 +21,7 @@
         <GradientStop  Color="OrangeRed" Offset="1" />
     </RadialGradientBrush>
 
-    <ControlTemplate x:Key="{ComponentResourceKey odc:Skins, ApplicationMenuButtonTemplate}" TargetType="{x:Type odc:RibbonToggleButton}">
+    <ControlTemplate x:Key="{ComponentResourceKey odc:Skins, ApplicationMenuButtonTemplate}" TargetType="{x:Type odc:RibbonDropDownButton}">
         <Grid Width="37" Height="37" VerticalAlignment="Center" HorizontalAlignment="Center">
             <Ellipse Fill="#A0000000"  Margin="1,1,0,0" Width="36" Height="36"  HorizontalAlignment="Left">
                 <Ellipse.Effect>
@@ -46,11 +46,26 @@
                 </Ellipse.Effect>
             </Ellipse>
             <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+            <Popup IsOpen="{Binding IsDropDownPressed, RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}" 
+                               Placement="Bottom"  StaysOpen="False"  
+                                VerticalOffset="-21"  
+                                
+                                MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                               PopupAnimation="{TemplateBinding PopupAnimation}"
+                               PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                               AllowsTransparency="True" 
+                               Name="PART_Popup" 
+                               Focusable="False">
+                <mwt:SystemDropShadowChrome Margin="0,0,5,5"  Color="#71000000" Name="Shdw" 
+                                                        CornerRadius="3"
+                                                        MinWidth="{TemplateBinding FrameworkElement.ActualWidth}"  >
+                    <ContentControl DockPanel.Dock="Bottom" Content="{TemplateBinding DropDownHeader}" ContentTemplate="{TemplateBinding DropDownHeaderTemplate}"/>
+                </mwt:SystemDropShadowChrome>
+            </Popup>
+
         </Grid>
         <ControlTemplate.Triggers>
-            <!--<Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Fill" Value="{StaticResource OrangeLightButton}" TargetName="elipse"/>
-                        </Trigger>-->
             <Trigger Property="IsMouseOver" Value="True">
                 <Trigger.EnterActions>
                     <BeginStoryboard>
@@ -72,6 +87,10 @@
                 <Setter Property="Visibility" Value="Hidden" TargetName="mouseOver"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Fill" Value="{StaticResource OrangeButton}" TargetName="elipse"/>
+                <Setter Property="Visibility" Value="Hidden" TargetName="mouseOver"/>
+            </Trigger>
+            <Trigger Property="IsDropDownPressed" Value="True">
                 <Setter Property="Fill" Value="{StaticResource OrangeButton}" TargetName="elipse"/>
                 <Setter Property="Visibility" Value="Hidden" TargetName="mouseOver"/>
             </Trigger>

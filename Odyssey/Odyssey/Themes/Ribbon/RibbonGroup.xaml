@@ -5,38 +5,25 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Odyssey;Component/Themes/Ribbon/RibbonSeparator.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/Odyssey;Component/Themes/Ribbon/RibbonHLChromeStyle.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/Odyssey;Component/Themes/Ribbon/RibbonGroupDropDownButton.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <odc:TwoLineConverter x:Key="twoLineConverter"/>
 
     <ControlTemplate TargetType="{x:Type odc:RibbonGroup}" x:Key="RibbonGroupTemplate">
-        <Grid Focusable="False">
-            <ToggleButton x:Name="PART_Button" SnapsToDevicePixels="True" Focusable="True"
-                          IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"
-                          ClickMode="Press"
+        <Grid >
+            <odc:RibbonDropDownButton x:Name="PART_Button" SnapsToDevicePixels="True" Focusable="True"
+                          IsDropDownPressed="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"
                          Visibility="Hidden"
+                          PopupAnimation="Fade"
                           BorderBrush="{TemplateBinding BorderBrush}"
                          Foreground="{TemplateBinding Foreground}"
                          Width="{TemplateBinding Width}"
+                          Template="{StaticResource RibbonGroupDropDownButtonTemplate}"
                         Height="{TemplateBinding Height}">
-                <ToggleButton.Template>
-                    <ControlTemplate TargetType="{x:Type ToggleButton}" >
-                        <odc:RibbonChrome  x:Name="chrome3"  SnapsToDevicePixels="True" Focusable="False"
-                          BorderBrush="{TemplateBinding BorderBrush}"
-                            RenderPressed="{Binding IsChecked, ElementName=PART_Button}"
-                            RenderMouseOver="{TemplateBinding IsMouseOver}"
-                            Style="{DynamicResource {ComponentResourceKey odc:Skins, CollapsedRibbonGroupChromeStyle}}">
-                            <ContentPresenter  Content="{TemplateBinding ToggleButton.Content}" VerticalAlignment="Top" HorizontalAlignment="Center"  TextBlock.TextAlignment="Center" Margin="4"/>
-                        </odc:RibbonChrome>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="RenderPressed" Value="True" TargetName="chrome3"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </ToggleButton.Template>
-                <StackPanel Height="84" SnapsToDevicePixels="True" Focusable="False">
-                    <odc:RibbonChrome RenderFlat="False" SnapsToDevicePixels="True" Focusable="False"
+                <odc:RibbonDropDownButton.Content>
+                    <StackPanel Height="84" SnapsToDevicePixels="True" Focusable="False">
+                        <odc:RibbonChrome RenderFlat="False" SnapsToDevicePixels="True" Focusable="False"
                                               Width="31" Height="31"
                                                CornerRadius="4"
                                               BorderBrush="{TemplateBinding BorderBrush}"
@@ -44,21 +31,51 @@
                                               Margin="5,2,5,4"
                                               HorizontalAlignment="Center"
                                               VerticalAlignment="Top">
-                        <Image Source="{TemplateBinding Image}"  SnapsToDevicePixels="True" ClipToBounds="True" Focusable="False"
+                            <Image Source="{TemplateBinding Image}"  SnapsToDevicePixels="True" ClipToBounds="True" Focusable="False"
                                RenderOptions.BitmapScalingMode="{TemplateBinding RenderOptions.BitmapScalingMode}" 
                                Width="16" Height="16"  Stretch="Fill"
                                Margin="4,4,0,4"  
                                VerticalAlignment="Top" HorizontalAlignment="Center" />
-                    </odc:RibbonChrome>
-                    <ContentPresenter Focusable="False"
+                        </odc:RibbonChrome>
+                        <ContentPresenter Focusable="False"
                                 Content="{Binding Title, RelativeSource={RelativeSource TemplatedParent},Converter={StaticResource twoLineConverter}}" 
                                x:Name="title"
                                Margin="2,0,2,0" 
                                VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="140" />
-                    <Image x:Name="symbol" Source="{DynamicResource {ComponentResourceKey odc:Skins, DownArrowImage}}" Margin="1,4,0,0" Stretch="None" SnapsToDevicePixels="True"/>
+                        <Image x:Name="symbol" Source="{DynamicResource {ComponentResourceKey odc:Skins, DownArrowImage}}" Margin="1,4,0,0" Stretch="None" SnapsToDevicePixels="True"/>
 
-                </StackPanel>
-            </ToggleButton>
+                    </StackPanel>
+                </odc:RibbonDropDownButton.Content>
+                <odc:RibbonDropDownButton.DropDownHeader>
+                    <Border Background="{DynamicResource {ComponentResourceKey odc:Skins, RibbonTabBrush}}" CornerRadius="3"  BorderThickness="0">
+                        <odc:RibbonChrome x:Name="popupchrome" 
+                               BorderBrush="{TemplateBinding BorderBrush}"
+                               Style="{DynamicResource {ComponentResourceKey odc:Skins, ExpandedRibbonGroupChromeStyle}}"
+                               RenderMouseOver="{Binding IsMouseOver, ElementName=popupchrome}">
+                            <StackPanel Margin="0" Focusable="False">
+                                <Border x:Name="PART_PopupItemsPanelHost" Padding="1,1,1,0" Focusable="False"/>
+                                <DockPanel Focusable="False">
+                                    <Button Width="15" Height="14" DockPanel.Dock="Right" VerticalAlignment="Bottom" Margin="0,2,1,1" x:Name="launcher2" Command="{x:Static odc:RibbonGroup.LaunchDialogCommand}">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                <odc:RibbonChrome 
+                                            RenderPressed="{TemplateBinding IsPressed}"
+                                            RenderMouseOver="{TemplateBinding IsMouseOver}" 
+                                            CornerRadius="0">
+                                                    <Image Source="{DynamicResource {ComponentResourceKey odc:Skins, LauncherButtonImage}}" Margin="1,1,0,0" Stretch="None" SnapsToDevicePixels="True"/>
+                                                </odc:RibbonChrome>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <ContentControl Focusable="False"
+                                          Foreground="{DynamicResource {ComponentResourceKey odc:Skins, GroupTitleForegroundBrush}}"
+                                        Content="{TemplateBinding Title}" VerticalAlignment="Center" HorizontalAlignment="Center" Height="16"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </odc:RibbonChrome>
+                    </Border>
+                </odc:RibbonDropDownButton.DropDownHeader>
+            </odc:RibbonDropDownButton>
 
             <odc:RibbonChrome x:Name="chrome1" SnapsToDevicePixels="True" Focusable="False"
                             Style="{DynamicResource {ComponentResourceKey odc:Skins, ExpandedRibbonGroupChromeStyle}}"
@@ -88,45 +105,9 @@
                                        Text="{TemplateBinding Title}" VerticalAlignment="Center" HorizontalAlignment="Center" 
                                        FontSize="11" Height="16" Visibility="Visible" Margin="0,2,0,0"/>
                         </DockPanel>
-            </StackPanel>
+                    </StackPanel>
                 </odc:RibbonChrome.Content>
             </odc:RibbonChrome>
-
-            <Popup x:Name="PART_Popup" 
-                   IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"
-                   PopupAnimation="Fade" Focusable="False"
-                   AllowsTransparency="True" StaysOpen="False">
-                <mwt:SystemDropShadowChrome Margin="0,0,5,5"  Focusable="False" Color="#41000000" Name="Shdw" MinWidth="{TemplateBinding FrameworkElement.ActualWidth}"  CornerRadius="4"  >
-                    <Border Background="{DynamicResource {ComponentResourceKey odc:Skins, RibbonTabBrush}}" CornerRadius="3"  BorderThickness="0" Focusable="False">
-                        <odc:RibbonChrome x:Name="popupchrome"  Focusable="False"
-                               BorderBrush="{TemplateBinding BorderBrush}"
-                               Style="{DynamicResource {ComponentResourceKey odc:Skins, ExpandedRibbonGroupChromeStyle}}"
-                               RenderMouseOver="{Binding IsMouseOver, ElementName=popupchrome}">
-                            <StackPanel Margin="0" Focusable="False">
-                                <Border x:Name="PART_PopupItemsPanelHost" Padding="1,1,1,0" Focusable="False"/>
-                                <DockPanel Focusable="False">
-                                    <Button Width="15" Height="14" DockPanel.Dock="Right" VerticalAlignment="Bottom" Margin="0,2,1,1" x:Name="launcher2" Command="{x:Static odc:RibbonGroup.LaunchDialogCommand}">
-                                        <Button.Template>
-                                            <ControlTemplate TargetType="{x:Type Button}">
-                                                <odc:RibbonChrome 
-                                            RenderPressed="{TemplateBinding IsPressed}"
-                                            RenderMouseOver="{TemplateBinding IsMouseOver}" 
-                                            CornerRadius="0">
-                                                    <Image Source="{DynamicResource {ComponentResourceKey odc:Skins, LauncherButtonImage}}" Margin="1,1,0,0" Stretch="None" SnapsToDevicePixels="True"/>
-                                                </odc:RibbonChrome>
-                                            </ControlTemplate>
-                                        </Button.Template>
-                                    </Button>
-                                    <ContentControl
-                                          Foreground="{DynamicResource {ComponentResourceKey odc:Skins, GroupTitleForegroundBrush}}"
-                                        Content="{TemplateBinding Title}" VerticalAlignment="Center" HorizontalAlignment="Center" Height="16"/>
-                                </DockPanel>
-                            </StackPanel>
-                        </odc:RibbonChrome>
-                    </Border>
-                </mwt:SystemDropShadowChrome>
-            </Popup>
-
         </Grid>
         <ControlTemplate.Triggers>
             <Trigger Property="IsDialogLauncherVisible" Value="False">
@@ -157,6 +138,6 @@
         <Setter Property="MinHeight" Value="88"/>
         <Setter Property="Margin" Value="2,2,2,2"/>
         <Setter Property="Template" Value="{StaticResource RibbonGroupTemplate}"/>
-        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Focusable" Value="True"/>
     </Style>
 </ResourceDictionary>

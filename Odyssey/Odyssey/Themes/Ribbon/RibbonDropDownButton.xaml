@@ -175,9 +175,6 @@
             <Trigger Property="ShowDropDownSymbol" Value="False">
                 <Setter Property="Visibility" Value="Collapsed" TargetName="symbol"/>
             </Trigger>
-            <Trigger Property="IsOpen" Value="True" SourceName="PART_Popup">
-                <Setter Property="RenderPressed" Value="True" TargetName="chrome"/>
-            </Trigger>
             <Trigger Property="odc:RibbonBar.Size" Value="Minimized">
                 <Setter Property="Visibility" Value="Collapsed" />
             </Trigger>
