@@ -418,9 +418,11 @@ Odyssey.Web.TreeViewControl.prototype = {
 
             if (!type) {
                 // since the click was not directly caused by a registered element, it's important not to fire a postback, but update the hidden field if the element is of type input
-                // since the click might be caused by a control to perform it's own postback, and thus the treeview must be aware of the assoicated node
-                // that was the reason for the click when it causes a command:
+                // since the click might be caused by a control to perform it's own postback, and thus the treeview must be aware of the associated node
+                // that was the reason for the click when it causes a command.
+                // changeset 03-02-2009: now check for <input type="image"/> and handle the click if it is an ImageButton:
                 if (e.tagName != "INPUT") type = "click";
+                else if (e.getAttribute("type") == "image") type = "click";
             }
             if (type) {
                 var node = Odyssey.Web.NodeFromChildElement(e);
@@ -616,13 +618,13 @@ Odyssey.Web.TreeViewControl.prototype = {
     set_editNodeIndex: function(value) {
         this._editNodeIndex = value;
     },
-    
+
     get_captureAllClicks: function() {
         return this._captureAllClicks;
     },
     set_captureAllClicks: function(value) {
         this._captureAllClicks = value;
-    },    
+    },
 
     add_contextMenu: function(handler) {
         this.get_events().addHandler("contextMenu", handler);

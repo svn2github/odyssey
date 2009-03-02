@@ -117,6 +117,7 @@ namespace Odyssey.Web
             // perform validation now, when all templates are assigned and population on demand is finished:
             Page.Validate();
 
+            NoScriptManagerException();
             ScriptManager.GetCurrent(Page).RegisterScriptControl(this);
             ScriptManager.RegisterHiddenField(this, hiddenFieldName, "");
             Page.RegisterRequiresPostBack(this);
@@ -527,6 +528,7 @@ namespace Odyssey.Web
             {
                 contextMenu.Controls.Clear();
                 ContextMenuTemplate.InstantiateIn(contextMenu);
+//                throw new ArgumentException("e");
                 contextMenu.DataBind();
             }
         }
@@ -789,10 +791,19 @@ namespace Odyssey.Web
         {
             if (!this.DesignMode)
             {
+                NoScriptManagerException();
                 ScriptManager.GetCurrent(Page).RegisterScriptDescriptors(this);
             }
 
             base.Render(writer);
+        }
+
+        /// <summary>
+        /// Throw an exception if no ScriptManager is available on the Page.
+        /// </summary>
+        private void NoScriptManagerException()
+        {
+            if (ScriptManager.GetCurrent(Page) == null) throw new ArgumentNullException("OdcTreeView requires a ScriptManager.");
         }
 
 

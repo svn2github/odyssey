@@ -7,14 +7,27 @@
 <head runat="server">
     <title></title>
 </head>
-<body>
+<body style="background-color: #C0C0C0">
     <form id="form2" runat="server">
     <asp:ScriptManager ID="ScriptManager1" runat="server" />
     <div>
         <h1>Example 4</h1>
         <h2>OdcTreeView and TreeNodeBinding event</h2>
         <h3>demonstates how to use NodeBinding event to apply different templates to a node under custom conditions.</h3>
-        <odc:OdcTreeView ID="OdcTreeView1" runat="server" EnableViewState="true" Font-Size="9"
+        <div style="margin: 8px; padding: 8px; font-family: 'Courier New'; font-size: small; background-color: #FFFFFF;">
+            protected void OdcTreeView1_NodeBinding(object sender, 
+            Odyssey.Web.TreeView.OdcTreeNodeBindingEventArgs e)
+            <br />
+            {<br />
+&nbsp;&nbsp; OdcTreeNode node = e.Node;
+            <br />
+&nbsp;&nbsp; if (node.HasChildNodes) e.Binding = e.Bindings.GetNamedBinding(&quot;Root&quot;);
+            <br />
+            }
+            <br />
+        </div>
+        <odc:OdcTreeView ID="OdcTreeView1" runat="server" EnableViewState="true" Font-Size="9" BackColor="White"
+         BorderColor="Black" BorderStyle="Solid" BorderWidth="1" style="margin:8px"
             Font-Names="Arial" EnableDragDrop="true" AutoPostBack="false" DisableTextSelection="true"
             EnableClientExpand="true" AllowNodeEditing="false" ExpandDepth="7" 
             onnodebinding="OdcTreeView1_NodeBinding" 
