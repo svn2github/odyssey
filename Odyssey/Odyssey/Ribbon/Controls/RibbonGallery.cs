@@ -118,7 +118,7 @@ namespace Odyssey.Controls
 
         private void MakeSelectedItemVisible()
         {
-            foreach (RibbonThumbnail thumb in wrapPanel.Children)
+            foreach (RibbonThumbnail thumb in WrapPanel.Children)
             {
                 if (thumb.IsSelected)
                 {
@@ -139,6 +139,22 @@ namespace Odyssey.Controls
         private RibbonDropDownButton popupBtn;
         private Panel wrapPanel;
         private FrameworkElement itemsPresenter;
+
+        public Panel WrapPanel
+        {
+            get
+            {
+                if (wrapPanel == null)
+                {
+                    wrapPanel = GetTemplateChild(partWrapPanel) as Panel;
+                    if (wrapPanel == null)
+                    {
+                        ApplyTemplate();                        
+                    }
+                }
+                return wrapPanel;
+            }
+        }
 
         public override void OnApplyTemplate()
         {
@@ -220,14 +236,16 @@ namespace Odyssey.Controls
             {
                 popup.Placement = PlacementMode.Relative;
                 popup.VerticalOffset = rect.Top;
-                popup.HorizontalOffset = rect.Left;
+                popup.HorizontalOffset = rect.Left;            
+
             }
+
 
             if (Columns > 0) popup.MinWidth = rect.Width;
             popup.MinHeight = rect.Height;
             itemsPresenter.MaxWidth = DropDownMaxSize.Width;
             itemsPresenter.MaxHeight = DropDownMaxSize.Height;
-            itemsPresenter.Width = ThumbnailSize.Width * ActualDropDownColumns;
+            itemsPresenter.Width = ActualWidth;
         }
 
 
@@ -317,7 +335,7 @@ namespace Odyssey.Controls
         {
             get
             {
-                double w = wrapPanel.DesiredSize.Width;
+                double w = WrapPanel.DesiredSize.Width;
                 return (int)Math.Floor(w / ThumbnailSize.Width);
             }
         }
@@ -325,27 +343,55 @@ namespace Odyssey.Controls
         protected override Size MeasureOverride(Size constraint)
         {
             double maxWrapPanelWidth = ThumbnailSize.Width * Columns;
-            if (wrapPanel.MaxWidth != maxWrapPanelWidth)
+            if (WrapPanel.MaxWidth != maxWrapPanelWidth)
             {
-                wrapPanel.MaxWidth = maxWrapPanelWidth;
-                wrapPanel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                WrapPanel.MaxWidth = maxWrapPanelWidth;
+                WrapPanel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             }
             Size size = base.MeasureOverride(constraint);
 
             double w = CalculateInRibbonThumbnailWidth();
-            if (wrapPanel.MaxWidth != w)
+            if (WrapPanel.MaxWidth != w)
             {
-                wrapPanel.MaxWidth = w;
-                wrapPanel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                WrapPanel.MaxWidth = w;
+                WrapPanel.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 size = base.MeasureOverride(constraint);
             }
+            int visibleItems = (int)(size.Width / ThumbnailSize.Width);
+            IsDropDownEnabled = visibleItems < Items.Count;
+
 
             return size;
         }
 
+        public int VisibleItems
+        {
+            get
+            {
+                return (int)(ActualWidth / ThumbnailSize.Width);
+            }
+        }
+
+
+
+        /// <summary>
+        /// Gets whether the drop down button is enabled. this is dependency property.
+        /// </summary>
+        public bool IsDropDownEnabled
+        {
+            get { return (bool)GetValue(IsDropDownEnabledProperty); }
+            private set { SetValue(IsDropDownEnabledPropertyKey, value); }
+        }
+
+        private static readonly DependencyPropertyKey IsDropDownEnabledPropertyKey =
+            DependencyProperty.RegisterReadOnly("IsDropDownEnabled", typeof(bool), typeof(RibbonGallery), new UIPropertyMetadata(false));
+
+        public static readonly DependencyProperty IsDropDownEnabledProperty = IsDropDownEnabledPropertyKey.DependencyProperty;
+
+
         private double CalculateInRibbonThumbnailWidth()
         {
-            double w = wrapPanel.DesiredSize.Width;
+            double w = WrapPanel.DesiredSize.Width;
             return this.ThumbnailSize.Width * Math.Floor(w / ThumbnailSize.Width);
         }
 
@@ -625,6 +671,38 @@ namespace Odyssey.Controls
         // Using a DependencyProperty as the backing store for DropDownWidth.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DropDownWidthProperty =
             DependencyProperty.Register("DropDownWidth", typeof(double), typeof(RibbonGallery), new UIPropertyMetadata(double.NaN));
+
+
+
+        /// <summary>
+        /// Gets or sets how a thumbnail image is scaled.
+        /// This is a dependency property.
+        /// </summary>
+        public BitmapScalingMode BitmapScalingMode
+        {
+            get { return (BitmapScalingMode)GetValue(BitmapScalingModeProperty); }
+            set { SetValue(BitmapScalingModeProperty, value); }
+        }
+
+        public static readonly DependencyProperty BitmapScalingModeProperty =
+            DependencyProperty.Register("BitmapScalingMode", typeof(BitmapScalingMode), typeof(RibbonGallery), new UIPropertyMetadata(BitmapScalingMode.NearestNeighbor));
+
+
+
+
+        /// <summary>
+        /// Gets or sets the edge mode when rendering a thumbnail image.
+        /// This is a dependency property.
+        /// </summary>
+        public EdgeMode EdgeMode
+        {
+            get { return (EdgeMode)GetValue(EdgeModeProperty); }
+            set { SetValue(EdgeModeProperty, value); }
+        }
+
+        public static readonly DependencyProperty EdgeModeProperty =
+            DependencyProperty.Register("EdgeMode", typeof(EdgeMode), typeof(RibbonGallery), new UIPropertyMetadata(EdgeMode.Aliased));
+
 
     }
 }

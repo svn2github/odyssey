@@ -12,6 +12,7 @@ using System.Windows;
 #endregion
 namespace Odyssey.Controls
 {
+    [ValueConversion(typeof(double), typeof(CornerRadius))]
     public class RoundedCornerResizeConverter:IValueConverter
     {
         #region IValueConverter Members

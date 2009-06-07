@@ -14,15 +14,45 @@ namespace Odyssey.Controls
 {
     partial class RibbonBar
     {
-        private static RoutedUICommand alignGroupsLeftCommand = new RoutedUICommand("Align Left", "AlignGroupsLeftCommand", typeof(RibbonBar));
-        private static RoutedUICommand alignGroupsRightCommand = new RoutedUICommand("Align Right", "AlignGroupsRightCommand", typeof(RibbonBar));
-        private static RoutedUICommand collapseRibbonBarCommand = new RoutedUICommand("", "CollapseRibbonBarCommand", typeof(RibbonBar));
+        public static readonly RoutedUICommand AlignGroupsLeftCommand = new RoutedUICommand("Align Left", "AlignGroupsLeftCommand", typeof(RibbonBar));
+        public static readonly RoutedUICommand AlignGroupsRightCommand = new RoutedUICommand("Align Right", "AlignGroupsRightCommand", typeof(RibbonBar));
+        public  static readonly RoutedUICommand CollapseRibbonBarCommand = new RoutedUICommand("", "CollapseRibbonBarCommand", typeof(RibbonBar));
+
+        public static readonly RoutedUICommand QAPlacementTopCommand = new RoutedUICommand("Show Above the Ribbon.", "QAPlacementTopCommand", typeof(RibbonBar));
+        public static readonly RoutedUICommand QAPlacementBottomCommand = new RoutedUICommand("Show Below the Ribbon.", "QAPlacementBottomCommand", typeof(RibbonBar));
 
         private static void RegisterCommands()
         {
-            CommandManager.RegisterClassCommandBinding(typeof(RibbonBar), new CommandBinding(alignGroupsLeftCommand, alignGroupsLeft));
-            CommandManager.RegisterClassCommandBinding(typeof(RibbonBar), new CommandBinding(alignGroupsRightCommand, alignGroupsRight));
-            CommandManager.RegisterClassCommandBinding(typeof(RibbonBar), new CommandBinding(collapseRibbonBarCommand, collapseRibbonBar));
+            CommandManager.RegisterClassCommandBinding(typeof(RibbonBar), new CommandBinding(AlignGroupsLeftCommand, alignGroupsLeft));
+            CommandManager.RegisterClassCommandBinding(typeof(RibbonBar), new CommandBinding(AlignGroupsRightCommand, alignGroupsRight));
+            CommandManager.RegisterClassCommandBinding(typeof(RibbonBar), new CommandBinding(CollapseRibbonBarCommand, collapseRibbonBar));
+
+            CommandManager.RegisterClassCommandBinding(typeof(RibbonBar), new CommandBinding(QAPlacementTopCommand, QAPlacementTop, IsQAPlacementTopEnabled));
+            CommandManager.RegisterClassCommandBinding(typeof(RibbonBar), new CommandBinding(QAPlacementBottomCommand, QAPlacementBottom, IsQAPlacementBottomEnabled));
+        }
+
+        private static void QAPlacementTop(object sender, ExecutedRoutedEventArgs e)
+        {
+            RibbonBar bar = (RibbonBar)sender;
+            bar.ToolbarPlacement = QAPlacement.Top;
+        }
+
+        private static void QAPlacementBottom(object sender, ExecutedRoutedEventArgs e)
+        {
+            RibbonBar bar = (RibbonBar)sender;
+            bar.ToolbarPlacement = QAPlacement.Bottom;
+        }
+
+        private static void IsQAPlacementTopEnabled(object sender, CanExecuteRoutedEventArgs e)
+        {
+            RibbonBar bar = (RibbonBar)sender;
+            e.CanExecute = bar.ToolbarPlacement == QAPlacement.Bottom;
+        }
+
+        private static void IsQAPlacementBottomEnabled(object sender, CanExecuteRoutedEventArgs e)
+        {
+            RibbonBar bar = (RibbonBar)sender;
+            e.CanExecute = bar.ToolbarPlacement == QAPlacement.Top;
         }
 
         private static void collapseRibbonBar(object sender, ExecutedRoutedEventArgs e)
@@ -44,17 +74,5 @@ namespace Odyssey.Controls
             RibbonBar bar = (RibbonBar)sender;
             bar.AlignGroupsRight();
         }
-
-        public static RoutedUICommand AlignGroupsLeftCommand
-        {
-            get { return alignGroupsLeftCommand; }
-        }
-
-        public static RoutedUICommand AlignGroupsRightCommand
-        {
-            get { return alignGroupsRightCommand; }
-        }
-
-        public static RoutedCommand CollapseRibbonBarCommand { get { return collapseRibbonBarCommand; } }
     }
 }

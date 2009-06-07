@@ -49,4 +49,25 @@
             <GradientStop Color="#FFFFE69E"  Offset="1"/>
         </LinearGradientBrush.GradientStops>
     </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="{ComponentResourceKey odc:Skins, ItemSelectedBgBrush}" StartPoint="0,0" EndPoint="0,1">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFFDD4A8" Offset="0" />
+            <GradientStop Color="#FFFBAE60" Offset="0.4" />
+            <GradientStop Color="#FFF9972F" Offset="0.4" />
+            <GradientStop Color="#FFFDE499" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, ItemSelectedBorderBrush}" Color="#FFC8B280" />
+
+    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, ItemMouseOverBorderBrush}" Color="#A0C8B280" />
+
+    <LinearGradientBrush x:Key="{ComponentResourceKey odc:Skins, ItemMouseOverBgBrush}" StartPoint="0,0" EndPoint="0,1">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#A0FFFDDC" Offset="0" />
+            <GradientStop Color="#A0FFE797" Offset="0.4" />
+            <GradientStop Color="#A0FFD754" Offset="0.4" />
+            <GradientStop Color="#A0FFE89F" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
 </ResourceDictionary>

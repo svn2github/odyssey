@@ -66,16 +66,6 @@ namespace Demos.Ribbon
         }
 
 
-        private void ShowBelowClick(object sender, RoutedEventArgs e)
-        {
-            ribbonBar.ToolbarPlacement = QAPlacement.Bottom;
-        }
-
-        private void ShowAboveClick(object sender, RoutedEventArgs e)
-        {
-            ribbonBar.ToolbarPlacement = QAPlacement.Top;
-        }
-
         private void CloseDemoClick(object sender, RoutedEventArgs e)
         {
             Close();

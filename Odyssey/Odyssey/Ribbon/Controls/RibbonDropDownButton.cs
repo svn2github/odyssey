@@ -15,6 +15,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
 using System.Diagnostics;
 using Odyssey.Controls.Ribbon.Interfaces;
+using System.ComponentModel;
+using Odyssey.Common;
+using Odyssey.Controls.Interfaces;
 
 #region Copyright
 // Odyssey.Controls.Ribbonbar
@@ -26,7 +29,7 @@ namespace Odyssey.Controls
 
     [TemplatePart(Name = partPopup)]
     [ContentProperty("Items")]
-    public class RibbonDropDownButton : MenuItem, IRibbonButton, ICommandSource
+    public class RibbonDropDownButton : ItemsControl, IRibbonButton, ICommandSource,IKeyTipControl
     {
         const string partPopup = "PART_Popup";
 
@@ -37,27 +40,55 @@ namespace Odyssey.Controls
 
         public RibbonDropDownButton()
         {
-            AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(menuItemClicked));
-            AddHandler(RibbonButton.ClickEvent, new RoutedEventHandler(buttonClick));
-            AddHandler(RibbonComboBox.DropDownClosedEvent, new RoutedEventHandler(menuItemClicked));
+            AddHandler(MenuItem.ClickEvent, new RoutedEventHandler(OnMenuItemClickedEvent));
+            AddHandler(RibbonButton.ClickEvent, new RoutedEventHandler(OnButtonClickEvent));
+            AddHandler(RibbonComboBox.DropDownClosedEvent, new RoutedEventHandler(OnMenuItemClickedEvent));
+            AddHandler(RibbonDropDownButton.PopupClosedEvent, new RoutedEventHandler(OnPopupClosedEvent));
+            AddHandler(RibbonGallery.SelectionChangedEvent, new RoutedEventHandler(OnGalerySelected));
+           
         }
 
-        private void buttonClick(object sender, RoutedEventArgs e)
+        protected virtual void OnGalerySelected(object sender, RoutedEventArgs e)
+        {
+            IsDropDownPressed = false;
+        }
+
+        /// <summary>
+        /// If any RibbonDropDownButton has closed it's popup, so also close it.
+        /// This is necassary for nested RibbonDropDownButtons to ensure that all are properly closed.
+        /// </summary>
+        protected virtual void OnPopupClosedEvent(object sender, RoutedEventArgs e)
+        {
+            if (IsDropDownPressed)
+            {
+                IsDropDownPressed = false;
+            }
+        }
+
+        protected virtual void OnButtonClickEvent(object sender, RoutedEventArgs e)
         {
             if (IsDropDownPressed)
             {
                 if (e.OriginalSource == this) return;
+                DependencyObject dep = e.OriginalSource as DependencyObject;
+                if (!(e.OriginalSource is RibbonButton) && !(e.OriginalSource is RibbonDropDownButton))
+                {
+                    if (dep != null && !RibbonOption.GetCloseDropDownOnClick(dep)) return;
+                }
+                else
+                {
+                    if (dep != null && !RibbonBar.GetAffectsDropDown(dep)) return;
+                }
                 if (IsAncestorType(e.OriginalSource, typeof(RibbonComboBox))) return;
                 IsDropDownPressed = false;
             }
         }
 
-        private void menuItemClicked(object sender, RoutedEventArgs e)
+        protected virtual void OnMenuItemClickedEvent(object sender, RoutedEventArgs e)
         {
             if (IsDropDownPressed)
             {
                 if (e.OriginalSource == this) return;
-                //                if (IsAncestorType(e.OriginalSource,typeof(RibbonComboBox))) return;
                 IsDropDownPressed = false;
             }
         }
@@ -75,31 +106,92 @@ namespace Odyssey.Controls
         }
 
 
+        internal protected Popup Popup { get; private set; }
 
-        protected Popup popup;
 
-        internal Popup Popup
-        {
-            get { return popup; }
-        }
 
 
         public override void OnApplyTemplate()
         {
-            if (popup != null)
+            if (Popup != null)
             {
-                popup.Closed -= OnPopupClosed;
-                popup.Opened -= OnPopupOpened;
+                Popup.Closed -= OnPopupClosed;
+                Popup.Opened -= OnPopupOpened;
             }
-            popup = GetTemplateChild(partPopup) as Popup;
-            if (popup != null)
+            Popup = GetTemplateChild(partPopup) as Popup;
+            if (Popup != null)
             {
-                popup.Closed += new EventHandler(OnPopupClosed);
-                popup.Opened += new EventHandler(OnPopupOpened);
+                Popup.Closed += new EventHandler(OnPopupClosed);
+                Popup.Opened += new EventHandler(OnPopupOpened);
+                Popup.StaysOpen = true;
             }
 
-            base.OnApplyTemplate();
+            //   base.OnApplyTemplate();
         }
+
+        public static readonly RoutedEvent ClickEvent = EventManager.RegisterRoutedEvent("Click",
+    RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(RibbonDropDownButton));
+
+
+
+
+        public bool IsCheckable
+        {
+            get { return (bool)GetValue(IsCheckableProperty); }
+            set { SetValue(IsCheckableProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsCheckable.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsCheckableProperty =
+            DependencyProperty.Register("IsCheckable", typeof(bool), typeof(RibbonDropDownButton), new UIPropertyMetadata(false));
+
+
+
+        public bool IsChecked
+        {
+            get { return (bool)GetValue(IsCheckedProperty); }
+            set { SetValue(IsCheckedProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsCheckedProperty =
+            DependencyProperty.Register("IsChecked", typeof(bool), typeof(RibbonDropDownButton), new UIPropertyMetadata(false, CheckedPropertyChanged));
+
+
+
+        private static void CheckedPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+        }
+
+        public bool IsPressed
+        {
+            get { return (bool)GetValue(IsPressedProperty); }
+            protected set { SetValue(IsPressedPropertyKey, value); }
+        }
+
+        private static readonly DependencyPropertyKey IsPressedPropertyKey =
+            DependencyProperty.RegisterReadOnly("IsPressed", typeof(bool), typeof(RibbonDropDownButton), new UIPropertyMetadata(false));
+
+        public static DependencyProperty IsPressedProperty = IsPressedPropertyKey.DependencyProperty;
+
+
+        protected virtual void OnClick()
+        {
+            ToggleChecked();
+        }
+
+        private void ToggleChecked()
+        {
+            if (IsCheckable)
+            {
+                Rect rect = new Rect(new Point(), base.RenderSize);
+                if (((Mouse.LeftButton == MouseButtonState.Pressed) && base.IsMouseOver) && rect.Contains(Mouse.GetPosition(this)))
+                {
+
+                    if (IsChecked) base.ClearValue(IsCheckedProperty); else IsChecked = true;
+                }
+            }
+        }
+
 
         public static readonly RoutedEvent PopupOpenedEvent = EventManager.RegisterRoutedEvent("PopupOpened",
             RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(RibbonDropDownButton));
@@ -121,15 +213,24 @@ namespace Odyssey.Controls
 
         protected virtual void OnPopupOpened(object sender, EventArgs e)
         {
+
             IsDropDownPressed = true;
             RoutedEventArgs args = new RoutedEventArgs(RibbonDropDownButton.PopupOpenedEvent);
+            if (Popup != null && Popup.Child != null) Popup.Child.Focus();
             RaiseEvent(args);
+            // Mouse.Capture(this, CaptureMode.SubTree);
         }
 
         protected virtual void OnPopupClosed(object sender, EventArgs e)
         {
+            if (Mouse.Captured == this)
+            {
+                Mouse.Capture(null);
+            }
+
+            IsChecked = false;
+            //base.ClearValue(IsDropDownPressedProperty);
             isDropDownOpen = false;
-            IsDropDownPressed = false;
             RoutedEventArgs args = new RoutedEventArgs(RibbonDropDownButton.PopupClosedEvent);
             RaiseEvent(args);
         }
@@ -202,33 +303,85 @@ namespace Odyssey.Controls
 
         static void IsDropDownPressedPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            bool newValue = (bool)e.NewValue;
             RibbonDropDownButton btn = d as RibbonDropDownButton;
+
+            if (newValue) Mouse.Capture(btn, CaptureMode.SubTree);
             btn.OnDropDownPressedChanged((bool)e.OldValue, (bool)e.NewValue);
 
         }
 
+
+        /// <summary>
+        /// Gets the target for the popup placement.
+        /// </summary>
+        protected virtual UIElement PlacementTarget
+        {
+            get { return this; }
+        }
+
         protected virtual void OnDropDownPressedChanged(bool oldValue, bool newValue)
         {
-            if (popup != null)
+            UpdateToolTip(newValue);
+
+            if (Popup != null)
             {
                 if (newValue)
                 {
-                    popup.PlacementTarget = this;
+                    Popup.PlacementTarget = PlacementTarget;
                     CloseOpenedPopup(this);
                 }
                 else
                 {
                     CloseOpenedPopup(null);
                 }
-                popup.IsOpen = newValue;
+                Popup.IsOpen = newValue;
+            }
+        }
+
+        object toolTip;
+
+        /// <summary>
+        /// When the popup is open, the tooltip must not be shown.
+        /// </summary>
+        private void UpdateToolTip(bool newValue)
+        {
+            if (newValue)
+            {
+                toolTip = ToolTip;
+                ToolTip = null;
+            }
+            else
+            {
+                ToolTip = toolTip;
             }
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            base.OnKeyDown(e);
             if (e.Key == Key.Enter || e.Key == Key.Space) { IsDropDownPressed = true; e.Handled = true; }
-            if (e.Key == Key.Escape) { IsDropDownPressed = false; e.Handled = true; }
+            switch (e.Key)
+            {
+                case Key.Escape:
+                    IsDropDownPressed = false;
+                    e.Handled = true;
+                    break;
+
+                //case Key.Down:
+                //    SelectNext();
+                //    e.Handled = true;
+                //    break;
+            }
+            base.OnKeyDown(e);
+        }
+
+        private void SelectNext()
+        {
+            ItemsPresenter ip = GetTemplateChild("PART_Items") as ItemsPresenter;
+            if (ip != null)
+            {
+                ip.Focus();
+            }
         }
 
         private bool isDropDownOpen = false;
@@ -237,32 +390,144 @@ namespace Odyssey.Controls
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            if (!IsDropDownPressed)
+            HandleMouseLeftButtonDown(e);
+            base.OnMouseLeftButtonDown(e);
+        }
+
+        protected virtual void HandleMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            if (!e.Handled)
             {
-                EnsurePopupRemainsOnMouseUp();
-                if (this.IsAncestorOf(e.OriginalSource as DependencyObject))
+                UpdateIsPressed();
+                if (!IsDropDownPressed)
+                {
+                    EnsurePopupRemainsOnMouseUp();
+                    if (this.IsAncestorOf(e.OriginalSource as DependencyObject))
+                    {
+                        ToggleDropDownState();
+                        e.Handled = true;
+                    }
+                }
+                else
                 {
                     ToggleDropDownState();
+                }
+                OnClick();
+            }
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+            this.UpdateIsPressed();
+        }
+
+        /// <summary>
+        /// Code snipped from original MenuItem class using Reflector:
+        /// </summary>
+        private void UpdateIsPressed()
+        {
+            Rect rect = new Rect(new Point(), base.RenderSize);
+            if (((Mouse.LeftButton == MouseButtonState.Pressed) && base.IsMouseOver) && rect.Contains(Mouse.GetPosition(this)))
+            {
+                this.IsPressed = true;
+            }
+            else
+            {
+                base.ClearValue(IsPressedPropertyKey);
+            }
+
+        }
+
+        protected override void OnIsKeyboardFocusedChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnIsKeyboardFocusedChanged(e);
+            if (this.IsDropDownPressed && !base.IsKeyboardFocusWithin)
+            {
+                DependencyObject focusedElement = Keyboard.FocusedElement as DependencyObject;
+                if ((focusedElement == null) || (!this.IsDropDownPressed && (ItemsControl.ItemsControlFromItemContainer(focusedElement) != this)))
+                {
+                    IsDropDownPressed = false;
+                }
+            }
+        }
+        protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            if (IsDropDownPressed)
+            {
+                UIElement originalSource = e.OriginalSource as UIElement;
+
+                if (!(this.IsLogicalAncestorOf(originalSource)))
+                {
+                    IsDropDownPressed = false;
                     e.Handled = true;
                 }
             }
-            base.OnMouseLeftButtonDown(e);
+            base.OnPreviewMouseLeftButtonDown(e);
+
         }
+
+        protected override void OnLostMouseCapture(MouseEventArgs e)
+        {
+            base.OnLostMouseCapture(e);
+            if (IsDropDownPressed)
+            {
+                FrameworkElement fe = e.OriginalSource as FrameworkElement;
+                FrameworkElement captured = Mouse.Captured as FrameworkElement;
+                if (captured != this && Popup != null)
+                {
+                    UIElement child = this.Popup.Child;
+                    if (e.OriginalSource == this)
+                    {
+                        if ((Mouse.Captured == null) || !child.IsLogicalAncestorOf(Mouse.Captured as UIElement))
+                        {
+                            this.IsDropDownPressed = false;
+                            e.Handled = true;
+                        }
+                    }
+                    else if (child.IsAncestorOf(e.OriginalSource as DependencyObject))
+                    {
+                        if (this.IsDropDownPressed && (Mouse.Captured == null))
+                        {
+                            Mouse.Capture(this, CaptureMode.SubTree);
+                            e.Handled = true;
+                        }
+                    }
+                    else if (!this.IsLogicalAncestorOf(Mouse.Captured as UIElement))
+                    {
+                        IsDropDownPressed = false;
+                    }
+                }
+                //       if (IsDropDownPressed) Mouse.Capture(this, CaptureMode.SubTree);
+            }
+        }
+
 
 
 
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
-            //  e.Handled = true;
-            EnsurePopupDoesNotStayOpen();
-            isDropDownOpen = IsDropDownPressed;
+            HandleMouseLeftButtonUp(e);
             base.OnMouseLeftButtonUp(e);
+        }
+
+        protected virtual void HandleMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            if (!e.Handled)
+            {
+                UpdateIsPressed();
+                isDropDownOpen = IsDropDownPressed;
+            }
         }
 
         protected virtual void ToggleDropDownState()
         {
-            isDropDownOpen ^= true;
-            SetValue(IsDropDownPressedProperty, isDropDownOpen);
+            Rect rect = new Rect(new Point(), base.RenderSize);
+            if (((Mouse.LeftButton == MouseButtonState.Pressed) && base.IsMouseOver) && rect.Contains(Mouse.GetPosition(this)))
+            {
+                isDropDownOpen ^= true;
+                SetValue(IsDropDownPressedProperty, isDropDownOpen);
+            }
         }
 
 
@@ -271,23 +536,10 @@ namespace Odyssey.Controls
             RibbonDropDownButton btn = DroppedDownButton;
             if (btn != null && (btn != caller))
             {
-                if (caller != null)
+                FrameworkElement parent = btn.Popup != null ? btn.Popup.Child as FrameworkElement : btn;
+                if (!parent.IsLogicalAncestorOf(caller))
                 {
-                    // don't close the popup if the previous popup is a host for the current caller:
-
-                    FrameworkElement parent = caller.Parent as FrameworkElement;
-                    while (parent != null)
-                    {
-                        if (parent == btn) return;
-                        FrameworkElement previous = parent;
-                        parent = parent.Parent as FrameworkElement;
-                        if (parent == null)
-                        {
-                            parent = previous.TemplatedParent as FrameworkElement;
-                        }
-                    }
-
-                    if (btn.popup != null) btn.popup.IsOpen = false;
+                    if (btn.Popup != null) btn.Popup.IsOpen = false;
                     btn.IsDropDownPressed = false;
                 }
             }
@@ -338,13 +590,26 @@ namespace Odyssey.Controls
         /// </summary>
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
-            return true;
-            //return item is RibbonMenuItem || item is Separator;
+            return item is MenuItem || item is Separator;
         }
 
         protected override DependencyObject GetContainerForItemOverride()
         {
             return new RibbonMenuItem();
+        }
+
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            base.PrepareContainerForItemOverride(element, item);
+            if (item is Separator)
+            {
+                Control c = element as Control;
+                if (c != null)
+                {
+                    c.IsEnabled = false;
+                    c.HorizontalContentAlignment = HorizontalAlignment.Stretch;
+                }
+            }
         }
 
 
@@ -397,15 +662,15 @@ namespace Odyssey.Controls
 
         protected void EnsurePopupRemainsOnMouseUp()
         {
-            if (popup != null) popup.StaysOpen = true;
+            if (Popup != null) Popup.StaysOpen = true;
         }
 
         protected void EnsurePopupDoesNotStayOpen()
         {
-            if (popup != null)
-            {
-                popup.StaysOpen = false;
-            }
+            //if (popup != null)
+            //{
+            //    popup.StaysOpen = false;
+            //}
         }
 
 
@@ -418,7 +683,7 @@ namespace Odyssey.Controls
 
         // Using a DependencyProperty as the backing store for PopupAnimation.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty PopupAnimationProperty =
-            DependencyProperty.Register("PopupAnimation", typeof(PopupAnimation), typeof(RibbonDropDownButton), new UIPropertyMetadata(PopupAnimation.Slide));
+            DependencyProperty.Register("PopupAnimation", typeof(PopupAnimation), typeof(RibbonDropDownButton), new UIPropertyMetadata(PopupAnimation.Fade));
 
 
 
@@ -452,16 +717,171 @@ namespace Odyssey.Controls
 
 
 
-        //protected override System.Collections.IEnumerator LogicalChildren
-        //{
-        //    get
-        //    {
-        //        List<object> list = new List<object>();
-        //        if (DropDownHeader != null) list.Add(DropDownHeader);
-        //        if (DropDownFooter != null) list.Add(DropDownFooter);
-        //        return list.GetEnumerator();
-        //    }
-        //}
+        public BitmapScalingMode BitmapScalingMode
+        {
+            get { return (BitmapScalingMode)GetValue(BitmapScalingModeProperty); }
+            set { SetValue(BitmapScalingModeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for BitmapScalingMode.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BitmapScalingModeProperty =
+            DependencyProperty.Register("BitmapScalingMode", typeof(BitmapScalingMode), typeof(RibbonDropDownButton), new UIPropertyMetadata(BitmapScalingMode.NearestNeighbor));
+
+
+
+
+        public EdgeMode EdgeMode
+        {
+            get { return (EdgeMode)GetValue(EdgeModeProperty); }
+            set { SetValue(EdgeModeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for EdgeMode.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty EdgeModeProperty =
+            DependencyProperty.Register("EdgeMode", typeof(EdgeMode), typeof(RibbonDropDownButton), new UIPropertyMetadata(EdgeMode.Aliased));
+
+
+        protected override System.Collections.IEnumerator LogicalChildren
+        {
+            get
+            {
+                List<object> list = new List<object>();
+                if (DropDownHeader != null) list.Add(DropDownHeader);
+                foreach (var item in Items)
+                {
+                    list.Add(item);
+                }
+                if (DropDownFooter != null) list.Add(DropDownFooter);
+                return list.GetEnumerator();
+            }
+        }
+
+        #region ICommandSource Members
+
+
+
+        public ICommand Command
+        {
+            get { return (ICommand)GetValue(CommandProperty); }
+            set { SetValue(CommandProperty, value); }
+        }
+
+        public static readonly DependencyProperty CommandProperty =
+            DependencyProperty.Register("Command", typeof(ICommand), typeof(RibbonDropDownButton), new FrameworkPropertyMetadata(null, new PropertyChangedCallback(OnCommandPropertyChanged)));
+
+
+        private static void OnCommandPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            RibbonDropDownButton btn = (RibbonDropDownButton)d;
+            btn.OnCommandChanged(btn, (ICommand)e.OldValue, (ICommand)e.NewValue);
+        }
+
+        // Keep a copy of the handler so it doesn't get garbage collected.
+        private EventHandler canExecuteChangedHandler;
+
+        protected virtual void OnCommandChanged(object sender, ICommand oldCommand, ICommand newCommand)
+        {
+            if (oldCommand != null) oldCommand.CanExecuteChanged -= OnCanExecuteChanged;
+            if (newCommand != null)
+            {
+                canExecuteChangedHandler = new EventHandler(OnCanExecuteChanged);
+                newCommand.CanExecuteChanged += canExecuteChangedHandler;
+            }
+
+            UpdateCanExecute();
+        }
+
+        protected virtual void OnCanExecuteChanged(object sender, EventArgs e)
+        {
+            this.UpdateCanExecute();
+        }
+
+        private void UpdateCanExecute()
+        {
+            if (this.Command != null)
+            {
+                this.CanExecute = CanExecuteCommandSource(this);              
+            }
+            else
+            {
+                this.CanExecute = true;
+            }
+
+            // finally notify the ui to reflect the changes:
+            CoerceValue(IsEnabledProperty);
+        }
+
+        private bool CanExecuteCommandSource(ICommandSource commandSource)
+        {
+            ICommand command = commandSource.Command;
+            if (command == null)
+            {
+                return false;
+            }
+            object commandParameter = commandSource.CommandParameter;
+            IInputElement commandTarget = commandSource.CommandTarget;
+            RoutedCommand command2 = command as RoutedCommand;
+            if (command2 == null)
+            {
+                return command.CanExecute(commandParameter);
+            }
+            if (commandTarget == null)
+            {
+                commandTarget = commandSource as IInputElement;
+            }
+            return command2.CanExecute(commandParameter, commandTarget);
+        }
+
+
+        private bool CanExecute = true;
+
+
+
+        protected override bool IsEnabledCore
+        {
+            get
+            {
+                return base.IsEnabledCore && CanExecute;
+            }
+        }
+
+
+        public object CommandParameter
+        {
+            get { return (object)GetValue(CommandParameterProperty); }
+            set { SetValue(CommandParameterProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CommandParameter.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CommandParameterProperty =
+            DependencyProperty.Register("CommandParameter", typeof(object), typeof(RibbonDropDownButton), new UIPropertyMetadata(null));
+
+
+        public IInputElement CommandTarget
+        {
+            get { return (IInputElement)GetValue(CommandTargetProperty); }
+            set { SetValue(CommandTargetProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CommandTarget.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CommandTargetProperty =
+            DependencyProperty.Register("CommandTarget", typeof(IInputElement), typeof(RibbonDropDownButton), new UIPropertyMetadata(null));
+
+
+
+        #endregion
+
+        #region IKeyboardCommand Members
+
+        public void ExecuteKeyTip()
+        {
+            Focus();
+            IsDropDownPressed = true;
+        }
+
+        #endregion
+
+
     }
 }
 

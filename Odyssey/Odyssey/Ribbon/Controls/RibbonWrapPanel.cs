@@ -76,9 +76,9 @@ namespace Odyssey.Controls
                     }
                     left += e.DesiredSize.Width;
                 }
-                else 
+                else
                 {
-                    RibbonSize size =  RibbonBar.GetSize(e);
+                    RibbonSize size = RibbonBar.GetSize(e);
                     if (size != RibbonSize.Minimized)
                     {
                         rowElements.Add(e);
@@ -114,22 +114,33 @@ namespace Odyssey.Controls
                 {
                     double h = Math.Max(smallHeight, e.DesiredSize.Height);
                     double w = e is IRibbonStretch ? max : e.DesiredSize.Width;
-                    e.Arrange(new Rect(left, topOffset, w, h));
+
+                    FrameworkElement fe = e as FrameworkElement;
+                    if (fe != null && fe.HorizontalAlignment != HorizontalAlignment.Left)
+                    {
+                        switch (fe.HorizontalAlignment)
+                        {
+                            case HorizontalAlignment.Right:
+                                e.Arrange(new Rect(max - w + left, topOffset, w, h));
+                                break;
+
+                            case HorizontalAlignment.Center:
+                                e.Arrange(new Rect((max - w) / 2 + left, topOffset, w, h));
+                                break;
+
+                            case HorizontalAlignment.Left:
+                            case HorizontalAlignment.Stretch:
+                                e.Arrange(new Rect(left, topOffset, w, h));
+                                break;
+                        }
+                    }
+                    else e.Arrange(new Rect(left, topOffset, w, h));
                 }
                 topOffset += rowHeight;
             }
             rowElements.Clear();
             return max;
         }
-
-        //protected override UIElementCollection CreateUIElementCollection(FrameworkElement logicalParent)
-        //{
-        //    //            return new UIElementCollection(this, (base.TemplatedParent == null) ? logicalParent : null);
-        //    return new UIElementCollection(this, base.TemplatedParent as FrameworkElement);
-        //}
-
- 
-
 
 
     }

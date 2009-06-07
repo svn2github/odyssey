@@ -5,7 +5,7 @@
 
     <ControlTemplate x:Key="RibbonGroupDropDownButtonTemplate" TargetType="{x:Type odc:RibbonDropDownButton}">
         <Grid>
-            <odc:RibbonChrome  x:Name="chrome3"  SnapsToDevicePixels="True" Focusable="False"
+            <odc:RibbonChrome  x:Name="chrome3"   Focusable="False"
                           BorderBrush="{TemplateBinding BorderBrush}"
                             RenderPressed="{Binding IsDropDownPressed, ElementName=PART_Button}"
                             RenderMouseOver="{TemplateBinding IsMouseOver}"

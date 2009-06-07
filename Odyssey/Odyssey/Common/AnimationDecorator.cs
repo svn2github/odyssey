@@ -111,9 +111,8 @@ namespace Odyssey.Controls
             set { SetValue(DurationProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Duration.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DurationProperty =
-            DependencyProperty.Register("Duration", typeof(Duration), typeof(AnimationDecorator), new UIPropertyMetadata(new Duration(new TimeSpan(0, 0, 0, 400))));
+            DependencyProperty.Register("Duration", typeof(Duration), typeof(AnimationDecorator), new UIPropertyMetadata(new Duration(new TimeSpan(0, 0, 0, 0, 250))));
 
 
         private bool animating = false;
@@ -244,30 +243,39 @@ namespace Odyssey.Controls
         protected override Size MeasureOverride(Size constraint)
         {
             if (Child == null) return new Size(0, 0);
+            Size size;
 
-            Child.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));
-            Double childHeight = Child.DesiredSize.Height;
-            Double deltaHeight = 0;
-            if (this.IsLoaded && IsVisible && CanAnimate)
+            if (double.IsInfinity(constraint.Height))
             {
-                if (targetHeight != childHeight)
+                Child.Measure(new Size(constraint.Width, Double.PositiveInfinity));
+                Double childHeight = Child.DesiredSize.Height;
+                Double deltaHeight = 0;
+                if (this.AnimateOnContentHeightChanged && this.IsLoaded && IsVisible && CanAnimate)
                 {
-                    deltaHeight = AnimatedResize(childHeight);
-                    if (animating)
+                    if (targetHeight != childHeight)
                     {
-                        AnimateExpandedChanged(IsExpanded);
+                        deltaHeight = AnimatedResize(childHeight);
+                        if (animating)
+                        {
+                            AnimateExpandedChanged(IsExpanded);
+                        }
                     }
                 }
+                else targetHeight = childHeight;
+
+                double w = IsExpanded ? Child.DesiredSize.Width : 0;
+                size = new Size(w, Math.Max(0d, childHeight + YOffset + HeightOffset + deltaHeight));
+
             }
-            else targetHeight = childHeight;
-
-            Size size = new Size();
-            size.Width = DesiredSize.Width;
-
-            childHeight += YOffset + HeightOffset + deltaHeight;
-            if (childHeight < 0) childHeight = 0;
-            size.Height = childHeight;
-            if (Child != null) Child.IsEnabled = childHeight > 0;
+            else
+            {
+                size = base.MeasureOverride(constraint);
+            }
+            if (Child != null)
+            {
+                Child.IsEnabled = size.Height > 0;
+            }
+            if (size.Height == 0) this.AnimationOpacity = 0;
             return size;
         }
 
@@ -282,18 +290,10 @@ namespace Odyssey.Controls
         protected override Size ArrangeOverride(Size arrangeSize)
         {
             if (Child == null) return arrangeSize;
-            Size size = new Size();
-            size.Width = arrangeSize.Width;
-            size.Height = Child.DesiredSize.Height;
-
-            Point p = new Point(0, YOffset);
-
-            Child.Arrange(new Rect(p, size));
-
-            Double h = Child.DesiredSize.Height + YOffset + HeightOffset;
-            if (h < 0) h = 0;
-            size.Height = h;
-            return size;
+           
+            Child.Arrange(new Rect(0d, YOffset, arrangeSize.Width, Child.DesiredSize.Height));
+            Double h = Math.Max(0, Child.DesiredSize.Height + YOffset);
+            return new Size(arrangeSize.Width, h);
         }
 
 
@@ -307,6 +307,20 @@ namespace Odyssey.Controls
         // Using a DependencyProperty as the backing store for CanAnimate.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CanAnimateProperty =
             DependencyProperty.Register("CanAnimate", typeof(bool), typeof(AnimationDecorator), new UIPropertyMetadata(true));
+
+
+
+
+        public bool AnimateOnContentHeightChanged
+        {
+            get { return (bool)GetValue(AnimateOnContentHeightChangedProperty); }
+            set { SetValue(AnimateOnContentHeightChangedProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for AnimateOnContentHeightChanged.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty AnimateOnContentHeightChangedProperty =
+            DependencyProperty.Register("AnimateOnContentHeightChanged", typeof(bool), typeof(AnimationDecorator), new UIPropertyMetadata(true));
+
 
 
     }

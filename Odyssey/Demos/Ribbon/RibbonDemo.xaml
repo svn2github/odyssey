@@ -8,8 +8,8 @@
     <odc:RibbonWindow.Resources>
         <local:ThumbnailConverter x:Key="ThumbnailConverter"/>
     </odc:RibbonWindow.Resources>
-    <DockPanel  RenderOptions.BitmapScalingMode="HighQuality" >
-        <odc:RibbonBar x:Name="ribbonBar" Title="RibbonBar Demo" DockPanel.Dock="Top" >
+    <DockPanel  >
+        <odc:RibbonBar x:Name="ribbonBar" DockPanel.Dock="Top" >
             <odc:RibbonBar.QAToolBar>
                 <odc:RibbonQAToolBar>
                     <odc:RibbonButton SmallImage="/img/save16.png"/>
@@ -19,14 +19,14 @@
                     <odc:RibbonToggleButton Content="Enable Glass" odc:RibbonBar.MinSize="Large" SmallImage="/img/search32.png"  
                                             IsChecked="{Binding IsGlassEnabled, ElementName=window}"/>
                     <odc:RibbonButton SmallImage="/img/props16.png"/>
-                    <odc:RibbonMenuItem Image="/img/props16.png" Header="Show Below the Ribbon" Click="ShowBelowClick"/>
-                    <odc:RibbonMenuItem Image="/img/props16.png" Header="Show Above the Ribbon" Click="ShowAboveClick"/>
+                    <odc:RibbonMenuItem Header="Show Below the Ribbon" Command="{x:Static odc:RibbonBar.QAPlacementBottomCommand}" />
+                    <odc:RibbonMenuItem Header="Show Above the Ribbon" Command="{x:Static odc:RibbonBar.QAPlacementTopCommand}" />
                     <Separator/>
                     <odc:RibbonMenuItem Header="Minimize Ribbon"  IsCheckable="True" IsChecked="{Binding CanMinimize, ElementName=ribbonBar, Mode=TwoWay}"/>
                 </odc:RibbonQAToolBar>
             </odc:RibbonBar.QAToolBar>
-            <odc:RibbonBar.ApplicationMenu>
-                <odc:RibbonApplicationMenu MenuButtonImage="/img/favorites16.png">
+            <odc:RibbonBar.ApplicationMenu >
+                <odc:RibbonApplicationMenu MenuButtonImage="/img/favorites16.png" odc:KeyTip.Key="F">
                     <odc:RibbonApplicationMenuItem Header="Open..."/>
                     <odc:RibbonApplicationMenuItem Header="Save" Image="/img/save32.png"/>
                     <odc:RibbonApplicationMenuItem Header="Save As..." Image="/img/save32.png"/>
@@ -49,30 +49,35 @@
                     </odc:RibbonApplicationMenuItem>
                     <odc:RibbonApplicationMenuItem Header="Skins"/>
                     <Separator/>
-                    <odc:RibbonApplicationMenuItem Header="Exit" Command="{x:Static odc:RibbonWindow.CloseCommand}"/>
+                    <odc:RibbonApplicationMenuItem Header="Exit" Command="{x:Static odc:RibbonWindow.CloseCommand}" />
                     <odc:RibbonApplicationMenu.RecentItemsList>
                         <TextBlock Text="This is a Placeholder for recent documents" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Top" MinHeight="300" TextWrapping="Wrap"/>
                     </odc:RibbonApplicationMenu.RecentItemsList>
                     <odc:RibbonApplicationMenu.Footer>
                         <StackPanel HorizontalAlignment="Stretch" Margin="0,4,0,0">
-                            <Button HorizontalAlignment="Right" Command="{x:Static odc:RibbonWindow.CloseCommand}">Close Demo</Button>
+                            <odc:OdcButton HorizontalAlignment="Right" Command="{x:Static odc:RibbonWindow.CloseCommand}" odc:KeyTip.Key="X">Close Demo</odc:OdcButton>
                         </StackPanel>
                     </odc:RibbonApplicationMenu.Footer>
                 </odc:RibbonApplicationMenu>
             </odc:RibbonBar.ApplicationMenu>
-            <odc:RibbonTabItem Title="Common" >
-                <odc:RibbonGroup Title="Skin" Image="/img/home16.png" IsDialogLauncherVisible="True"  ExecuteLauncher="RibbonGroup_LaunchDialog">
-                    <odc:RibbonToggleButton Content="Enable Glass" odc:RibbonBar.MinSize="Large" LargeImage="/img/search32.png"  
-                                            IsChecked="{Binding IsGlassEnabled, ElementName=window}"/>
-                    <odc:RibbonSeparator/>
-                    <odc:RibbonButton Content="Vista" odc:RibbonBar.MinSize="Large" SmallImage="/img/save16.png" LargeImage="/img/Save32.png" Click="VistaClick"/>
-                    <odc:RibbonButton Content="Windows 7" odc:RibbonBar.MinSize="Large" SmallImage="/img/save16.png" LargeImage="/img/Save32.png" Click="Win7Click"/>
-                    <odc:RibbonButton Content="Office Blue" odc:RibbonBar.MinSize="Medium" SmallImage="/img/home16.png" LargeImage="/img/home32.png" Click="OfficeBlueClick"/>
-                    <odc:RibbonButton Content="Office Silver" odc:RibbonBar.MinSize="Medium"  SmallImage="/img/paste16.png" LargeImage="/img/paste32.png" Click="OfficeSilverClick"/>
-                    <odc:RibbonButton Content="Office Black" odc:RibbonBar.MinSize="Medium"  SmallImage="/img/search16.png" LargeImage="/img/search32.png" Click="OfficeBlackClick"/>
+            <odc:RibbonTabItem Title="Common"  odc:KeyTip.Key="H">               
+                <odc:RibbonGroup Title="Skin" Image="/img/home16.png" IsDialogLauncherVisible="True"  ExecuteLauncher="RibbonGroup_LaunchDialog" odc:KeyTip.Key="SK">
+                    <odc:RibbonToggleButton Content="Enable Glass" odc:RibbonBar.MinSize="Large" LargeImage="/img/search32.png" odc:KeyTip.Key="G"
+                            IsChecked="{Binding IsGlassEnabled, ElementName=window}">
+                        <odc:RibbonToggleButton.ToolTip>
+                            <odc:RibbonToolTip Title="Glas" Description="Enables or disables glass if running on Vista or Windows 7." Image="/img/search32.png"
+                                    Footer="Press F1 for help" />
+                        </odc:RibbonToggleButton.ToolTip>
+                    </odc:RibbonToggleButton>
+                        <odc:RibbonSeparator/>
+                    <odc:RibbonButton Content="Vista" odc:RibbonBar.MinSize="Large" SmallImage="/img/save16.png" LargeImage="/img/Save32.png" Click="VistaClick" odc:KeyTip.Key="V"/>
+                    <odc:RibbonButton Content="Windows 7" odc:RibbonBar.MinSize="Large" SmallImage="/img/save16.png" LargeImage="/img/Save32.png" Click="Win7Click" odc:KeyTip.Key="7"/>
+                    <odc:RibbonButton Content="Office Blue" odc:RibbonBar.MinSize="Medium" SmallImage="/img/home16.png" LargeImage="/img/home32.png" Click="OfficeBlueClick" odc:KeyTip.Key="BL"/>
+                    <odc:RibbonButton Content="Office Silver" odc:RibbonBar.MinSize="Medium"  SmallImage="/img/paste16.png" LargeImage="/img/paste32.png" Click="OfficeSilverClick" odc:KeyTip.Key="SI"/>
+                    <odc:RibbonButton Content="Office Black" odc:RibbonBar.MinSize="Medium"  SmallImage="/img/search16.png" LargeImage="/img/search32.png" Click="OfficeBlackClick" odc:KeyTip.Key="BK"/>
                 </odc:RibbonGroup>
                 <odc:RibbonGroup Title="Gallery" Image="/img/undo16.png" IsDialogLauncherVisible="True" ExecuteLauncher="RibbonGroup_LaunchDialog">
-                    <odc:RibbonGallery x:Name="gallery" odc:RibbonGallery.Stretch="None" DropDownColumns="5">
+                    <odc:RibbonGallery x:Name="gallery" odc:RibbonGallery.Stretch="None"  DropDownColumns="5" EdgeMode="Aliased" BitmapScalingMode="HighQuality">
                         <odc:RibbonGallery.ThumbnailSize>
                             <Size Width="36" Height="36"/>
                         </odc:RibbonGallery.ThumbnailSize>
@@ -122,7 +127,7 @@
                             <TextBlock Text="Custom Footer" Background="Lime"/>
                         </odc:RibbonDropDownButton.DropDownFooter>
                     </odc:RibbonDropDownButton>
-                    <odc:RibbonSplitButton odc:RibbonBar.MinSize="Medium"  Content="Split Button"  Click="Context1Click"
+                    <odc:RibbonSplitButton odc:RibbonBar.MinSize="Medium"  Content="Split Button" 
                                            SmallImage="/img/delete16.png" LargeImage="/img/delete32.png">
                         <odc:RibbonMenuItem Header="Item 1" Image="/img/cut16.png"/>
                         <odc:RibbonMenuItem Header="Item 2" Image="/img/cut16.png"/>
@@ -161,7 +166,7 @@
                     </odc:RibbonFlowGroup>
                 </odc:RibbonGroup>
             </odc:RibbonTabItem>
-            <odc:RibbonTabItem Title="Standard Controls">
+            <odc:RibbonTabItem Title="Standard Controls" odc:KeyTip.Key="S">
                 <odc:RibbonGroup Title="CheckBoxes" Image="/img/favorites16.png" Padding="10,2,10,2">
                     <CheckBox Content="Check 1" Margin="0,0,16,0"/>
                     <CheckBox Content="Check 2"/>
@@ -188,14 +193,14 @@
                 </odc:RibbonGroup>
 
             </odc:RibbonTabItem>
-            <odc:RibbonTabItem Title="Contextual Tabs">
+            <odc:RibbonTabItem Title="Contextual Tabs" odc:KeyTip.Key="CX">
                 <odc:RibbonGroup Title="Select">
                     <odc:RibbonButton Content="Context #1" LargeImage="/img/paste32.png" odc:RibbonBar.MinSize="Large" Click="Context1Click" />
                     <odc:RibbonButton Content="Context #2" LargeImage="/img/mail32.png" odc:RibbonBar.MinSize="Large" Click="Context2Click" />
                     <odc:RibbonButton Content="Off" LargeImage="/img/delete32.png" odc:RibbonBar.MinSize="Large" Click="ContextOffClick" />
                 </odc:RibbonGroup>
             </odc:RibbonTabItem>
-            <odc:RibbonTabItem Title="Wrappings #1">
+            <odc:RibbonTabItem Title="Wrappings #1" odc:KeyTip.Key="W1">
                 <odc:RibbonGroup Title="9 Buttons">
                     <odc:RibbonButton Content="Button 1" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png"/>
                     <odc:RibbonButton Content="Button 2" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png"/>
@@ -229,14 +234,14 @@
                     <odc:RibbonButton Content="Button 3" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png"/>
                 </odc:RibbonGroup>
             </odc:RibbonTabItem>
-            <odc:RibbonTabItem Title="Wrappings #2">
+            <odc:RibbonTabItem Title="Wrappings #2" odc:KeyTip.Key="W2">
                 <odc:RibbonGroup Title="6 Buttons">
-                    <odc:RibbonButton Content="Button 1" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png"/>
-                    <odc:RibbonButton Content="Button 2" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png"/>
-                    <odc:RibbonButton Content="Button 3" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png"/>
-                    <odc:RibbonButton Content="Button 4" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png"/>
-                    <odc:RibbonButton Content="Button 5" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png"/>
-                    <odc:RibbonButton Content="Button 6" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png"/>
+                    <odc:RibbonButton Content="Button 1" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png" odc:KeyTip.Key="B1"/>
+                    <odc:RibbonButton Content="Button 2" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png" odc:KeyTip.Key="B2"/>
+                    <odc:RibbonButton Content="Button 3" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png" odc:KeyTip.Key="B3"/>
+                    <odc:RibbonButton Content="Button 4" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png" odc:KeyTip.Key="B4"/>
+                    <odc:RibbonButton Content="Button 5" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png" odc:KeyTip.Key="B4"/>
+                    <odc:RibbonButton Content="Button 6" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png" odc:KeyTip.Key="B6"/>
                 </odc:RibbonGroup>
                 <odc:RibbonGroup Title="5 Buttons">
                     <odc:RibbonButton Content="Button 1" LargeImage="/img/paste32.png" SmallImage="/img/paste16.png"/>

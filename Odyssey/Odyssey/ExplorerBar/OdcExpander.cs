@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using System.Windows.Markup;
 using System.IO;
 using System.Xml;
+using Odyssey.Controls.Interfaces;
 
 #region Licence
 // Copyright (c) 2008 Thomas Gerber
@@ -31,7 +32,7 @@ namespace Odyssey.Controls
     /// <summary>
     /// An Expander with animation.
     /// </summary>
-    public class OdcExpander : HeaderedContentControl
+    public class OdcExpander : HeaderedContentControl,IKeyTipControl
     {
         static OdcExpander()
         {
@@ -317,5 +318,31 @@ namespace Odyssey.Controls
             DependencyProperty.Register("CanAnimate", typeof(bool), typeof(OdcExpander), new UIPropertyMetadata(true));
 
 
+
+
+        public bool IsHeaderVisible
+        {
+            get { return (bool)GetValue(IsHeaderVisibleProperty); }
+            set { SetValue(IsHeaderVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsHeaderVisibleProperty =
+            DependencyProperty.Register("IsHeaderVisible", typeof(bool), typeof(OdcExpander), new UIPropertyMetadata(true));
+
+
+
+        #region IKeyTipControl Members
+
+        void IKeyTipControl.ExecuteKeyTip()
+        {
+            this.IsExpanded ^= true;
+            if (this.IsExpanded)
+            {
+                FrameworkElement e = Content as FrameworkElement;
+                if (e != null && e.Focusable) e.Focus();
+            }
+        }
+
+        #endregion
     }
 }

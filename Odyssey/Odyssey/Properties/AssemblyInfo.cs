@@ -53,6 +53,6 @@ using System.Windows.Markup;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.19.*")]
-[assembly: AssemblyFileVersion("1.3.19.20")]
+[assembly: AssemblyVersion("1.4.21.*")]
+[assembly: AssemblyFileVersion("1.4.21.20")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]

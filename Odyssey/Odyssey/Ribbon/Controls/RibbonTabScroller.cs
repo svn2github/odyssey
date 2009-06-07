@@ -29,6 +29,7 @@ namespace Odyssey.Controls
             RegisterCommands();
         }
 
+
         private static void RegisterCommands()
         {
             CommandManager.RegisterClassCommandBinding(typeof(RibbonTabScroller), new CommandBinding(scrollLeftCommand, ScrollLeftExecute));

@@ -11,6 +11,7 @@ using System.Windows.Data;
 #endregion
 namespace Odyssey.Controls
 {
+    [ValueConversion(typeof(string), typeof(string))]
     public class TwoLineTextConverter : IValueConverter
     {
         #region IValueConverter Members

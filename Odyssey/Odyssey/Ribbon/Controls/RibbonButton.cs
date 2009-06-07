@@ -15,6 +15,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
 using Odyssey.Controls.Ribbon.Interfaces;
 using System.Windows.Media.Effects;
+using Odyssey.Controls.Interfaces;
 
 #region Copyright
 // Odyssey.Controls.Ribbonbar
@@ -24,7 +25,7 @@ using System.Windows.Media.Effects;
 namespace Odyssey.Controls
 {
     [ContentProperty("Content")]
-    public class RibbonButton : Button, IRibbonButton
+    public class RibbonButton : Button, IRibbonButton,IKeyTipControl
     {
 
         static RibbonButton()
@@ -98,5 +99,25 @@ namespace Odyssey.Controls
             DependencyProperty.RegisterAttached("ImageStretch", typeof(Stretch), typeof(RibbonButton), new UIPropertyMetadata(Stretch.Uniform));
 
 
+
+
+        //public BitmapScalingMode LargeImageScalingMode
+        //{
+        //    get { return (BitmapScalingMode)GetValue(LargeImageScalingModeProperty); }
+        //    set { SetValue(LargeImageScalingModeProperty, value); }
+        //}
+
+        //public static readonly DependencyProperty LargeImageScalingModeProperty = RibbonBar.LargeImageScalingModeProperty.AddOwner(typeof(RibbonButton));          
+
+
+
+        #region IKeyboardCommand Members
+
+        public void ExecuteKeyTip()
+        {
+            OnClick();
+        }
+
+        #endregion
     }
 }

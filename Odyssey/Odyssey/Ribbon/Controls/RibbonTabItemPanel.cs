@@ -73,7 +73,7 @@ namespace Odyssey.Controls
             {
                 foreach (UIElement e in Children)
                 {
-                    if (e.Visibility == Visibility.Visible) yield return e;
+                    if (e!=null && e.Visibility == Visibility.Visible) yield return e;
                 }
             }
         }

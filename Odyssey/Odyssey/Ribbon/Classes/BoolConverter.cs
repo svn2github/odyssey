@@ -11,6 +11,7 @@ using System.Windows.Data;
 #endregion
 namespace Odyssey.Controls
 {
+    [ValueConversion(typeof(bool), typeof(bool))]
     public class BoolConverter:IValueConverter
     {
         #region IValueConverter Members

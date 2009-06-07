@@ -5,8 +5,10 @@
         <ResourceDictionary Source="pack://application:,,,/Odyssey;Component/Skins/Ribbon/Window7Skin.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-
-    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, HighlightedRibbonBorderBrush}" Color="#FF3C7FB1"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, ActiveTitleBrush}" Color="Black" />
+    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, InactiveTitleBrush}" Color="#A0000000" />
+    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, MouseOverRibbonBorderBrush}" Color="#607DA2CE" />
+    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, HighlightedRibbonBorderBrush}" Color="#FF7DA2CE"/>
 
     <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, RibbonButtonGroupBgBrush}" Color="#FFD0E0EC"/>
 

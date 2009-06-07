@@ -33,6 +33,12 @@ namespace Odyssey.Controls
             SizeChanged += new SizeChangedEventHandler(OnSizeChanged);
             HookWndProc();
             RegisterCommands();
+            SkinManager.SkinChanged += new EventHandler(OnSkinChanged);
+        }
+
+        protected virtual void OnSkinChanged(object sender, EventArgs e)
+        {
+            SetWindowTitleBrush();
         }
 
         protected override void OnSourceInitialized(EventArgs e)
@@ -90,12 +96,31 @@ namespace Odyssey.Controls
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
+            VerifyAccess();
             UIElement child = this.VisualChildrenCount > 0 ? GetVisualChild(0) as UIElement : null;
             if (child != null)
             {
-                child.Arrange(new Rect(arrangeBounds));
+                Size size = new Size(arrangeBounds.Width, arrangeBounds.Height);
+
+                child.Arrange(new Rect(size));
+                return size;
+
             }
             return arrangeBounds;
+        }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            if (VisualChildrenCount > 0)
+            {
+                UIElement visualChild = GetVisualChild(0) as UIElement;
+                if (visualChild != null)
+                {
+                    visualChild.Measure(availableSize);
+                    return visualChild.DesiredSize;
+                }
+            }
+            return base.MeasureOverride(availableSize);
         }
 
 
@@ -360,13 +385,13 @@ namespace Odyssey.Controls
 
         void SetWindowTitleBrush()
         {
-            if (WindowState == WindowState.Maximized && IsGlassOn)
+            if (IsGlassOn)
             {
-                WindowTitleBrush = Brushes.White;
+                WindowTitleBrush = IsWindowActive ? SystemColors.ActiveCaptionTextBrush : SystemColors.InactiveCaptionTextBrush;
             }
             else
             {
-                WindowTitleBrush = IsWindowActive ? SystemColors.ActiveCaptionTextBrush : SystemColors.InactiveCaptionTextBrush;
+                WindowTitleBrush = IsWindowActive ? ActiveTitleBrush : InactiveTitleBrush;
             }
         }
 
@@ -402,11 +427,34 @@ namespace Odyssey.Controls
             private set { SetValue(WindowTitleBrushPropertyKey, value); }
         }
 
-        // Using a DependencyProperty as the backing store for WindowTitleBrush.  This enables animation, styling, binding, etc...
         private static readonly DependencyPropertyKey WindowTitleBrushPropertyKey =
             DependencyProperty.RegisterReadOnly("WindowTitleBrush", typeof(Brush), typeof(RibbonWindow), new UIPropertyMetadata(null));
 
         public static DependencyProperty WindowTitleBrushProperty = WindowTitleBrushPropertyKey.DependencyProperty;
+
+
+
+
+        public Brush ActiveTitleBrush
+        {
+            get { return (Brush)GetValue(ActiveTitleBrushProperty); }
+            set { SetValue(ActiveTitleBrushProperty, value); }
+        }
+
+        public static readonly DependencyProperty ActiveTitleBrushProperty =
+            DependencyProperty.Register("ActiveTitleBrush", typeof(Brush), typeof(RibbonWindow), new UIPropertyMetadata(null));
+
+
+
+
+        public Brush InactiveTitleBrush
+        {
+            get { return (Brush)GetValue(InactiveTitleBrushProperty); }
+            set { SetValue(InactiveTitleBrushProperty, value); }
+        }
+
+        public static readonly DependencyProperty InactiveTitleBrushProperty =
+            DependencyProperty.Register("InactiveTitleBrush", typeof(Brush), typeof(RibbonWindow), new UIPropertyMetadata(null));
 
 
 

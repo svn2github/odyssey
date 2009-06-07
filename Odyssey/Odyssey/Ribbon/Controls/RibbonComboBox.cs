@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Controls.Primitives;
 using System.ComponentModel;
 using Odyssey.Controls.Ribbon.Interfaces;
+using System.Diagnostics;
+using Odyssey.Controls.Interfaces;
 
 #region Copyright
 // Odyssey.Controls.Ribbonbar
@@ -16,7 +18,7 @@ using Odyssey.Controls.Ribbon.Interfaces;
 #endregion
 namespace Odyssey.Controls
 {
-    public class RibbonComboBox : ComboBox, IRibbonControl, IRibbonStretch
+    public class RibbonComboBox : ComboBox, IRibbonControl, IRibbonStretch,IKeyTipControl
     {
         static RibbonComboBox()
         {
@@ -38,7 +40,6 @@ namespace Odyssey.Controls
             set { SetValue(ImageProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Image.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ImageProperty =
             DependencyProperty.Register("Image", typeof(ImageSource), typeof(RibbonComboBox), new UIPropertyMetadata(null));
 
@@ -52,9 +53,23 @@ namespace Odyssey.Controls
             set { SetValue(TitleProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register("Title", typeof(string), typeof(RibbonComboBox), new UIPropertyMetadata(""));
+
+
+
+        /// <summary>
+        /// Gets or sets the width for the label.
+        /// </summary>
+        public double LabelWidth
+        {
+            get { return (double)GetValue(LabelWidthProperty); }
+            set { SetValue(LabelWidthProperty, value); }
+        }
+
+        public static readonly DependencyProperty LabelWidthProperty =
+            DependencyProperty.Register("LabelWidth", typeof(double), typeof(RibbonComboBox), new UIPropertyMetadata(double.NaN));
+
 
 
         /// <summary>
@@ -67,7 +82,6 @@ namespace Odyssey.Controls
             set { SetValue(ContentWidthProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for ContentWidth.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ContentWidthProperty =
             DependencyProperty.Register("ContentWidth", typeof(double), typeof(RibbonComboBox), new UIPropertyMetadata(double.NaN));
 
@@ -151,5 +165,28 @@ namespace Odyssey.Controls
             DependencyProperty.Register("DropDownFooterTemplate", typeof(DataTemplate), typeof(RibbonComboBox), new UIPropertyMetadata(null));
 
 
+
+        protected override void OnPreviewMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (!IsEditable && e.Source==this)
+            {
+                this.IsDropDownOpen ^= true;
+                e.Handled = true;
+            }
+            base.OnPreviewMouseLeftButtonDown(e);
+        }
+
+        #region IKeyboardCommand Members
+
+        public void ExecuteKeyTip()
+        {
+            Focus();
+            if (HasItems)
+            {
+                IsDropDownOpen = true;
+            }
+        }
+
+        #endregion
     }
 }

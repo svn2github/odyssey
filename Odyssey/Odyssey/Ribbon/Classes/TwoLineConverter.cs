@@ -15,6 +15,7 @@ namespace Odyssey.Controls
     /// <summary>
     /// Breaks a string into two lines by adding a LineBreak at the appropriate position.
     /// </summary>
+    [ValueConversion(typeof(string), typeof(TextBlock))]
     public class TwoLineConverter : IValueConverter
     {
         #region IValueConverter Members

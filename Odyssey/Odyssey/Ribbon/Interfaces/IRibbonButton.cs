@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using System.Windows;
+using Odyssey.Controls.Interfaces;
 
 #region Copyright
 // Odyssey.Controls.Ribbonbar
@@ -12,7 +13,7 @@ using System.Windows;
 #endregion
 namespace Odyssey.Controls.Ribbon.Interfaces
 {
-    public interface IRibbonButton:IRibbonControl
+    public interface IRibbonButton:IRibbonControl,IKeyTipControl
     {
         object Content { get; set; }
 

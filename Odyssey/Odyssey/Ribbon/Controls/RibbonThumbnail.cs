@@ -39,9 +39,14 @@ namespace Odyssey.Controls
         protected override void OnMouseLeftButtonDown(System.Windows.Input.MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            RibbonThumbnail original = this.Original != null ? Original : this;
-            if (Gallery!=null) Gallery.SelectedItem = original;
+            Select();
             e.Handled = true;
+        }
+
+        private void Select()
+        {
+            RibbonThumbnail original = this.Original != null ? Original : this;
+            if (Gallery != null) Gallery.SelectedItem = original;
         }
 
         private RibbonGallery Gallery
@@ -83,6 +88,20 @@ namespace Odyssey.Controls
         }
 
 
+        protected override void OnKeyUp(System.Windows.Input.KeyEventArgs e)
+        {
+            if (!e.Handled)
+            {
+                switch (e.Key)
+                {
+                    case System.Windows.Input.Key.Enter:
+                    case System.Windows.Input.Key.Space:
+                        Select();
+                        break;
+                }
+            }
+            base.OnKeyUp(e);
+        }
 
         public Stretch Stretch
         {

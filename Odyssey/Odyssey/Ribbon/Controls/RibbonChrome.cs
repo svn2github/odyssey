@@ -69,8 +69,6 @@ namespace Odyssey.Controls
             DependencyProperty.Register("MousePressedBackground", typeof(Brush), typeof(RibbonChrome), new UIPropertyMetadata(null));
 
 
-
-
         public Brush MouseCheckedBackground
         {
             get { return (Brush)GetValue(MouseCheckedBackgroundProperty); }
@@ -104,15 +102,22 @@ namespace Odyssey.Controls
             DependencyProperty.Register("RenderFlat", typeof(bool), typeof(RibbonChrome), new UIPropertyMetadata(true));
 
 
-        public bool NoAnimation
+
+
+
+        public static bool GetAnimateTransition(DependencyObject obj)
         {
-            get { return (bool)GetValue(NoAnimationProperty); }
-            set { SetValue(NoAnimationProperty, value); }
+            return (bool)obj.GetValue(AnimateTransitionProperty);
         }
 
-        // Using a DependencyProperty as the backing store for NoAnimation.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty NoAnimationProperty =
-            DependencyProperty.Register("NoAnimation", typeof(bool), typeof(RibbonChrome), new UIPropertyMetadata(true));
+        public static void SetAnimateTransition(DependencyObject obj, bool value)
+        {
+            obj.SetValue(AnimateTransitionProperty, value);
+        }
+
+        public static readonly DependencyProperty AnimateTransitionProperty =
+            DependencyProperty.RegisterAttached("AnimateTransition", typeof(bool), typeof(RibbonChrome), new FrameworkPropertyMetadata(false,FrameworkPropertyMetadataOptions.Inherits));
+
 
 
         public bool ShowInnerMouseOverBorder
@@ -121,7 +126,6 @@ namespace Odyssey.Controls
             set { SetValue(ShowInnerMouseOverBorderProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for ShowInnerMouseOverBorder.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ShowInnerMouseOverBorderProperty =
             DependencyProperty.Register("ShowInnerMouseOverBorder", typeof(bool), typeof(RibbonChrome), new UIPropertyMetadata(true));
 
@@ -132,7 +136,6 @@ namespace Odyssey.Controls
             set { SetValue(InnerBorderThicknessProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for InnerBorderThickness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty InnerBorderThicknessProperty =
             DependencyProperty.Register("InnerBorderThickness", typeof(Thickness), typeof(RibbonChrome), new UIPropertyMetadata(new Thickness(1,1,0,0)));
 
@@ -143,9 +146,45 @@ namespace Odyssey.Controls
             set { SetValue(RenderEnabledProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for RenderEnabled.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty RenderEnabledProperty =
             DependencyProperty.Register("RenderEnabled", typeof(bool), typeof(RibbonChrome), new UIPropertyMetadata(true));
+
+
+        public Brush MouseOverBorderBrush
+        {
+            get { return (Brush)GetValue(MouseOverBorderBrushProperty); }
+            set { SetValue(MouseOverBorderBrushProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MouseOverBorderBrush.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MouseOverBorderBrushProperty =
+            DependencyProperty.Register("MouseOverBorderBrush", typeof(Brush), typeof(RibbonChrome), new UIPropertyMetadata(null));
+
+
+
+        /// <summary>
+        /// Gets wether a control is rendered in grayscale when IsEnabled is set to true.
+        /// This is an attached inheritable dependency property. The default value is true. 
+        /// </summary>
+        public static bool GetIsGrayScaleEnabled(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsGrayScaleEnabledProperty);
+        }
+
+        /// <summary>
+        /// Sets wether to render a control in grayscale when  IsEnabled is set to true.
+        /// This is an attached inheritable dependency property. The default value is true. 
+        /// </summary>
+        public static void SetIsGrayScaleEnabled(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsGrayScaleEnabledProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for IsGrayScaleEnabled.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsGrayScaleEnabledProperty =
+            DependencyProperty.RegisterAttached("IsGrayScaleEnabled", typeof(bool), typeof(RibbonChrome), 
+            new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.Inherits));
+
 
 
 

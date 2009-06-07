@@ -30,7 +30,6 @@ using System.Collections;
 #endregion
 namespace Odyssey.Controls
 {
-    //TODO: Rename BreadcrumbItem.Trace to BreadcrumbItem.PathEntry
     /// <summary>
     /// A breadcrumb item that is part of a BreadcrumbBar and contains a BreadcrumbButton and nested child BreadcrumbItems.
     /// </summary>
@@ -376,16 +375,11 @@ namespace Odyssey.Controls
             BreadcrumbItem result = item as BreadcrumbItem;
             if (result == null)
             {
-                //Stopwatch sw = Stopwatch.StartNew();
                 result = CreateItem(item);
-                //Debug.WriteLine("Create: " + sw.ElapsedMilliseconds.ToString());
                 if (result != null)
                 {
                     AddLogicalChild(result);
-                //    Debug.WriteLine("Logic: " + sw.ElapsedMilliseconds.ToString());
                     result.ApplyTemplate();
-                  //  sw.Stop();
-                  //  Debug.WriteLine("Apply: " + sw.ElapsedMilliseconds.ToString());
                 }
             }
             return result;
@@ -652,13 +646,13 @@ namespace Odyssey.Controls
         /// <returns>An object included in Items, otherwise null.</returns>
         public object GetTraceItem(string trace)
         {
-            //this.ApplyTemplate();
+            this.ApplyTemplate();
             foreach (object item in Items)
             {
                 BreadcrumbItem bcItem = ContainerFromItem(item);
-                if (item != null)
+                if (bcItem != null)
                 {
-                    //ApplyProperties(item);
+                    ApplyProperties(item);
                     string value = bcItem.TraceValue;
                     if (value != null && value.Equals(trace, StringComparison.InvariantCultureIgnoreCase)) return item;
                 }

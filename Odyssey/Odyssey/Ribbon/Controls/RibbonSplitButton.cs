@@ -26,25 +26,26 @@ namespace Odyssey.Controls
         }
 
 
-        private Control dropDownBtn;
+        protected  Control DropDownButton {get;private set;}
+
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            if (dropDownBtn != null)
+            if (DropDownButton != null)
             {
-                dropDownBtn.MouseDown -= dropDownBtn_MouseDown;
-                dropDownBtn.MouseUp -= dropDownBtn_MouseUp;
+                DropDownButton.MouseDown -= OnDropDownButtonDown;
+                DropDownButton.MouseUp -= OnDropDownButtonUp;
             }
-            dropDownBtn = GetTemplateChild(partDropDown) as Control;
-            if (dropDownBtn != null)
+            DropDownButton = GetTemplateChild(partDropDown) as Control;
+            if (DropDownButton != null)
             {
-                dropDownBtn.MouseDown += new MouseButtonEventHandler(dropDownBtn_MouseDown);
-                dropDownBtn.MouseUp += new MouseButtonEventHandler(dropDownBtn_MouseUp);
+                DropDownButton.MouseLeftButtonDown += new MouseButtonEventHandler(OnDropDownButtonDown);
+                DropDownButton.MouseLeftButtonUp += new MouseButtonEventHandler(OnDropDownButtonUp);
             }
         }
 
-        void dropDownBtn_MouseDown(object sender, MouseButtonEventArgs e)
+        protected virtual void OnDropDownButtonDown(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
 
@@ -52,10 +53,9 @@ namespace Odyssey.Controls
             EnsurePopupRemainsOnMouseUp();
         }
 
-        void dropDownBtn_MouseUp(object sender, MouseButtonEventArgs e)
+        protected virtual void OnDropDownButtonUp(object sender, MouseButtonEventArgs e)
         {
             EnsurePopupDoesNotStayOpen();
-            e.Handled = true;
         }
 
 
@@ -67,32 +67,47 @@ namespace Odyssey.Controls
             set { SetValue(ClickModeProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for ClickMode.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ClickModeProperty =
             DependencyProperty.Register("ClickMode", typeof(ClickMode), typeof(RibbonSplitButton), new UIPropertyMetadata(ClickMode.Release));
 
 
-
-
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            IsPressed = true;
             base.OnMouseLeftButtonDown(e);
+            IsPressed = true;
             EnsurePopupRemainsOnMouseUp();
             if (ClickMode == ClickMode.Press) PerformClick();
         }
+
+        protected override void HandleMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            //base.HandleMouseLeftButtonDown(e);
+        }
+
+        protected override void HandleMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            //base.HandleMouseLeftButtonUp(e);
+        }
+
 
         private void PerformClick()
         {
             OnClick();
         }
 
+        protected override void OnClick()
+        {
+            if ((Command != null) && Command.CanExecute(CommandParameter)) Command.Execute(CommandParameter);
+            base.OnClick();
+        }
+
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
+            bool wasPressed = IsPressed;
             IsPressed = false;
             base.OnMouseLeftButtonUp(e);
             EnsurePopupDoesNotStayOpen();
-            if (ClickMode == ClickMode.Release) PerformClick();
+            if (wasPressed && ClickMode == ClickMode.Release) PerformClick();
 
         }
 

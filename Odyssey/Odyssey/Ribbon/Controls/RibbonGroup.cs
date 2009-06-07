@@ -18,6 +18,7 @@ using System.Diagnostics;
 using Odyssey.Controls.Classes;
 using Odyssey.Controls.Ribbon.Interfaces;
 using System.Collections.Specialized;
+using Odyssey.Controls.Interfaces;
 
 #region Copyright
 // Odyssey.Controls.Ribbonbar
@@ -31,7 +32,7 @@ namespace Odyssey.Controls
     [TemplatePart(Name = partItemsPanelHost)]
     [TemplatePart(Name = partPopupItemsPanelHost)]
     [TemplatePart(Name = partPopup)]
-    public partial class RibbonGroup:Control
+    public partial class RibbonGroup : Control,IKeyTipControl
     {
 
         const string partItemsPanelHost = "PART_ItemsPanelHost";
@@ -89,10 +90,6 @@ namespace Odyssey.Controls
             if (ItemPanelInstance != null)
             {
                 ItemPanelInstance.Children.Clear();
-            }
-
-            if (ItemPanelInstance != null)
-            {
                 foreach (UIElement e in Controls)
                 {
                     ItemPanelInstance.Children.Add(e);
@@ -152,6 +149,17 @@ namespace Odyssey.Controls
         }
 
 
+        /// <summary>
+        /// CAUTION:
+        /// Call ApplyTemplate after EndInit to ensure that all controls properties could have applied to a Binding.
+        /// If ApplyTemplate is not executed here, bindings like "Binding IsChecked, ElementName=anyname" would not work if this group is
+        /// not yet visibile, for instance, if it is in a RibbonTab that is not the initial first tab.
+        /// </summary>
+        public override void EndInit()
+        {
+            base.EndInit();
+            ApplyTemplate();
+        }
 
         public bool IsDropDownOpen
         {
@@ -161,7 +169,7 @@ namespace Odyssey.Controls
 
         // Using a DependencyProperty as the backing store for IsDropDownOpen.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsDropDownOpenProperty =
-            DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(RibbonGroup), 
+            DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(RibbonGroup),
             new UIPropertyMetadata(false, DropDownOpenPropertyChanged));
 
         private static void DropDownOpenPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -575,8 +583,10 @@ namespace Odyssey.Controls
 
             foreach (GroupBucket b in buckets)
             {
-                int smallLevel = b.Count - 3;
-                for (int i = b.Count % 3; i < b.Count; i++)
+                int smallLevel = Math.Max(0, b.Count - 3);
+                int startIndex = Controls.Count == 2 ? 0 : b.Count % 3;
+
+                for (int i = startIndex; i < b.Count; i++)
                 {
                     RibbonSize minSize = i >= smallLevel ? RibbonSize.Small : RibbonSize.Medium;
                     reducable.Add(b[i], minSize);
@@ -595,5 +605,22 @@ namespace Odyssey.Controls
 
         #endregion
 
+        /// <summary>
+        /// Executes the launcher command.
+        /// </summary>
+        public virtual void DoExecuteLauncher()
+        {
+            RoutedEventArgs args = new RoutedEventArgs(RibbonGroup.ExecuteLauncherEvent);            
+            RaiseEvent(args);
+        }
+
+        #region IKeyTipControl Members
+
+        void IKeyTipControl.ExecuteKeyTip()
+        {
+            DoExecuteLauncher();
+        }
+
+        #endregion
     }
 }

@@ -18,6 +18,16 @@ namespace Odyssey.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(RibbonApplicationMenuItem), new FrameworkPropertyMetadata(typeof(RibbonApplicationMenuItem)));
         }
 
+        protected override bool IsItemItsOwnContainerOverride(object item)
+        {
+            return item is RibbonMenuItem;
+        }
+
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new RibbonApplicationMenuItem();
+        }
+
 
 
         /// <summary>
@@ -30,9 +40,23 @@ namespace Odyssey.Controls
             set { SetValue(SubMenuTitleProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for SubMenuTitle.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SubMenuTitleProperty =
             DependencyProperty.Register("SubMenuTitle", typeof(object), typeof(RibbonApplicationMenuItem), new UIPropertyMetadata(null));
+
+
+
+        /// <summary>
+        /// Gets or sets the content that appears in the right part of the ApplicationMenu.
+        /// </summary>
+        public object SubMenuContent
+        {
+            get { return (object)GetValue(SubMenuContentProperty); }
+            set { SetValue(SubMenuContentProperty, value); }
+        }
+
+        public static readonly DependencyProperty SubMenuContentProperty =
+            DependencyProperty.Register("SubMenuContent", typeof(object), typeof(RibbonApplicationMenuItem), new UIPropertyMetadata(null));
+
 
 
     }

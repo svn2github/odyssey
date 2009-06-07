@@ -14,16 +14,18 @@ namespace Odyssey.Controls
 {
     public partial class RibbonWindow
     {
-        private static RoutedUICommand closeCommand = new RoutedUICommand("Close", "CloseCommand", typeof(RibbonWindow));
-        private static RoutedUICommand minimizeCommand = new RoutedUICommand("Minimize", "MinimizeCommand", typeof(RibbonWindow));
-        private static RoutedUICommand maximizeCommand = new RoutedUICommand("Maximize", "MaximizeCommand", typeof(RibbonWindow));
+        public static readonly RoutedUICommand CloseCommand = new RoutedUICommand("Close", "CloseCommand", typeof(RibbonWindow));
+        public static readonly RoutedUICommand MinimizeCommand = new RoutedUICommand("Minimize", "MinimizeCommand", typeof(RibbonWindow));
+        public static readonly RoutedUICommand MaximizeCommand = new RoutedUICommand("Maximize", "MaximizeCommand", typeof(RibbonWindow));
 
         private static void RegisterCommands()
         {
-            CommandManager.RegisterClassCommandBinding(typeof(RibbonWindow), new CommandBinding(closeCommand, PerformClose));
-            CommandManager.RegisterClassCommandBinding(typeof(RibbonWindow), new CommandBinding(minimizeCommand, PerformMinimize));
-            CommandManager.RegisterClassCommandBinding(typeof(RibbonWindow), new CommandBinding(maximizeCommand, PerformMaximize));
+            CommandManager.RegisterClassCommandBinding(typeof(RibbonWindow), new CommandBinding(CloseCommand, PerformClose));
+            CommandManager.RegisterClassCommandBinding(typeof(RibbonWindow), new CommandBinding(MinimizeCommand, PerformMinimize));
+            CommandManager.RegisterClassCommandBinding(typeof(RibbonWindow), new CommandBinding(MaximizeCommand, PerformMaximize));
+
         }
+
 
         private static void PerformClose(object sender, ExecutedRoutedEventArgs e)
         {
@@ -42,9 +44,5 @@ namespace Odyssey.Controls
             RibbonWindow window = (RibbonWindow)sender;
             window.WindowState = window.WindowState == WindowState.Maximized  ? WindowState.Normal : WindowState.Maximized;
         }
-
-        public static RoutedUICommand CloseCommand {get{return closeCommand;}}
-        public static RoutedUICommand MinimizeCommand { get { return minimizeCommand; } }
-        public static RoutedUICommand MaximizeCommand { get { return maximizeCommand; } }
     }
 }

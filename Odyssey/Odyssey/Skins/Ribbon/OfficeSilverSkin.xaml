@@ -6,6 +6,8 @@
     </ResourceDictionary.MergedDictionaries>
 
 
+    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, ActiveTitleBrush}" Color="#FF5C626A" />
+    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, InactiveTitleBrush}" Color="#FF8A8A8A" />
     <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, PopupContainerBgBrush}" Color="White"/>
 
     <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, WindowButtonPenColor}" Color="#FF626E7C"/>
@@ -116,6 +118,7 @@
     <Style TargetType="{x:Type odc:RibbonChrome}" x:Key="WindowButtonChromeStyle">
         <Setter Property="InnerBorderThickness" Value="0.2,0.5,0.2,0.5"/>
         <Setter Property="BorderBrush" Value="#FFB2BDCC"/>
+        <Setter Property="MouseOverBorderBrush" Value="#FFB2BDCC" />
         <Setter Property="MouseOverBackground" Value="{StaticResource MouseOverWndButtonBrush}" />
         <Setter Property="MousePressedBackground" Value="{StaticResource MousePressedWndButtonBrush}" />
         <Style.Triggers>

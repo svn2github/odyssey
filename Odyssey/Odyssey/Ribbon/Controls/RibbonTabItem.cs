@@ -18,6 +18,8 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Odyssey.Controls.Classes;
+using Odyssey.Controls.Ribbon.Interfaces;
+using Odyssey.Controls.Interfaces;
 
 #region Copyright
 // Odyssey.Controls.Ribbonbar
@@ -27,18 +29,56 @@ using Odyssey.Controls.Classes;
 namespace Odyssey.Controls
 {
 
-    [ContentProperty("Groups")]
-    public class RibbonTabItem :Control
+    [ContentProperty("Items")]
+    public class RibbonTabItem : ItemsControl, IKeyTipControl
     {
 
         static RibbonTabItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(RibbonTabItem), new FrameworkPropertyMetadata(typeof(RibbonTabItem)));
+
+            // changing the visibility requires the RibbonBar to be rendered again, so ensure the correct metadata options to be set:
+            VisibilityProperty.OverrideMetadata(
+                typeof(RibbonTabItem),
+                new FrameworkPropertyMetadata(Visibility.Visible,
+                    FrameworkPropertyMetadataOptions.AffectsParentArrange
+                    | FrameworkPropertyMetadataOptions.AffectsParentArrange
+                    | FrameworkPropertyMetadataOptions.AffectsParentMeasure
+                    | FrameworkPropertyMetadataOptions.AffectsRender));
         }
 
         public RibbonTabItem()
             : base()
         {
+            IsVisibleChanged += new DependencyPropertyChangedEventHandler(OnVisibleChanged);
+        }
+
+        /// <summary>
+        /// CAUTION:
+        /// Call ApplyTemplate after EndInit to ensure that all controls properties could have applied to a Binding.
+        /// If ApplyTemplate is not executed here, bindings like "Binding IsChecked, ElementName=anyname" would not work if this group is
+        /// not yet visibile, for instance, if it is in a RibbonTab that is not the initial first tab.
+        /// </summary>
+        public override void EndInit()
+        {
+            base.EndInit();
+            ApplyTemplate();
+        }
+
+        protected virtual void OnVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            bool visible = (bool)e.NewValue;
+            if (!visible) this.RibbonBar.EnsureTabIsVisible();
+        }
+
+        protected override bool IsItemItsOwnContainerOverride(object item)
+        {
+            return item is RibbonGroup;
+        }
+
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new RibbonGroup();
         }
 
 
@@ -47,11 +87,12 @@ namespace Odyssey.Controls
             base.OnApplyTemplate();
         }
 
-         static Size infiniteSize = new Size(double.PositiveInfinity, double.PositiveInfinity);
+        static Size infiniteSize = new Size(double.PositiveInfinity, double.PositiveInfinity);
 
         private ObservableCollection<RibbonGroup> groups = new ObservableCollection<RibbonGroup>();
 
-        public Collection<RibbonGroup> Groups { get { return groups; } }
+        [Obsolete("for backward compatibility only. Use Items instead!")]
+        public ItemCollection Groups { get { return Items; } }
 
         /// <summary>
         /// Gets or sets the title for the tab item.
@@ -99,7 +140,17 @@ namespace Odyssey.Controls
 
         // Using a DependencyProperty as the backing store for IsSelected.  This enables animation, styling, binding, etc...
         private static readonly DependencyPropertyKey IsSelectedPropertyKey =
-            DependencyProperty.RegisterReadOnly("IsSelected", typeof(bool), typeof(RibbonTabItem), new UIPropertyMetadata(false));
+            DependencyProperty.RegisterReadOnly("IsSelected", typeof(bool), typeof(RibbonTabItem), new UIPropertyMetadata(false, null, CoerceIsSelected));
+
+        public static object CoerceIsSelected(DependencyObject d, object baseValue)
+        {
+            RibbonTabItem item = (RibbonTabItem)d;
+            if (item.RibbonBar.CanMinimize && !item.RibbonBar.IsExpanded)
+            {
+                return false;
+            }
+            return baseValue;
+        }
 
         public static readonly DependencyProperty IsSelectedProperty = IsSelectedPropertyKey.DependencyProperty;
 
@@ -107,7 +158,7 @@ namespace Odyssey.Controls
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            RibbonBar.SelectedTabItem = this;
+            if (RibbonBar != null) RibbonBar.SelectedTabItem = this;
             e.Handled = true;
         }
 
@@ -118,8 +169,8 @@ namespace Odyssey.Controls
         /// </summary>
         public RibbonBar RibbonBar
         {
-            get {return ribbon; }
-            internal set {ribbon=value;}
+            get { return ribbon; }
+            internal set { ribbon = value; }
         }
 
         protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
@@ -135,6 +186,21 @@ namespace Odyssey.Controls
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
+            if (!e.Handled)
+            {
+                switch (e.Key)
+                {
+                    case Key.Left:
+                        SelectPreviousTab();
+                        e.Handled = true;
+                        break;
+
+                    case Key.Right:
+                        SelectNextTab();
+                        e.Handled = true;
+                        break;
+                }
+            }
             base.OnKeyDown(e);
             if (e.Key == Key.Space) RibbonBar.SelectedTabItem = this;
         }
@@ -157,17 +223,54 @@ namespace Odyssey.Controls
         /// </summary>
         public Color Color
         {
-            get { return tabSet!=null ? tabSet.Color : Colors.Transparent; }
+            get { return tabSet != null ? tabSet.Color : Colors.Transparent; }
         }
 
-        protected override IEnumerator LogicalChildren
+
+        private void SelectNextTab()
         {
-            get
+            if (IsKeyboardFocused)
             {
-                return Groups.GetEnumerator();
+                int index = ribbon.IndexOfVisibleTab(ribbon.SelectedTabItem) + 1;
+                RibbonTabItem tab = ribbon.VisibleTabFromIndex(index);
+                if (tab != null)
+                {
+                    ribbon.SelectedTabItem = tab;
+                    FocusSelectedTab();
+                }
+            }
+        }
+
+        private void FocusSelectedTab()
+        {
+            RibbonTabItem tab = ribbon.SelectedTabItem;
+            if (tab != null) tab.Focus();
+        }
+
+        private void SelectPreviousTab()
+        {
+            if (IsKeyboardFocused)
+            {
+                int index = ribbon.IndexOfVisibleTab(ribbon.SelectedTabItem) - 1;
+                RibbonTabItem tab = ribbon.VisibleTabFromIndex(index);
+                if (tab != null)
+                {
+                    ribbon.SelectedTabItem = tab;
+                    FocusSelectedTab();
+                }
             }
         }
 
 
+
+        #region IKeyboardCommand Members
+
+        void IKeyTipControl.ExecuteKeyTip()
+        {
+            Focus();
+            ribbon.SelectedTabItem = this;
+        }
+
+        #endregion
     }
 }

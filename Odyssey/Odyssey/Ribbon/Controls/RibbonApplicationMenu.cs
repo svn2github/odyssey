@@ -11,6 +11,10 @@ using System.Windows.Input;
 using System.Diagnostics;
 using System.Timers;
 using System.Windows.Shapes;
+using System.Windows.Data;
+using Odyssey.Controls.Ribbon.Interfaces;
+using Odyssey.Controls.Interfaces;
+using System.Collections;
 
 #region Copyright
 // Odyssey.Controls.Ribbonbar
@@ -20,13 +24,11 @@ using System.Windows.Shapes;
 namespace Odyssey.Controls
 {
     [ContentProperty("Items")]
-    [TemplatePart(Name = partApplicationMenuPopup)]
     [TemplatePart(Name = partRecentItemsList)]
     [TemplatePart(Name = partAppButton)]
     [TemplatePart(Name = partAppButtonClone)]
-    public class RibbonApplicationMenu : MenuItem
+    public class RibbonApplicationMenu : MenuItem,IKeyTipControl
     {
-        const string partApplicationMenuPopup = "PART_AppMenuPopup";
         const string partRecentItemsList = "PART_RecentItemsList";
         const string partAppButton = "PART_AppButton";
         const string partAppButtonClone = "PART_AppButtonClone";
@@ -122,33 +124,27 @@ namespace Odyssey.Controls
         }
 
 
-        private Popup popup;
         private FrameworkElement recentItemsList;
         private RibbonDropDownButton appButton;
-        private RibbonDropDownButton appButtonClone;
+        private FrameworkElement appButtonClone;
+
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
-            if (popup != null)
-            {
-                popup.Opened -= OnPopupOpenend;
-                popup.Closed -= OnPopupClosed;
-            }
-            popup = GetTemplateChild(partApplicationMenuPopup) as Popup;
-            if (popup != null)
-            {
-                popup.StaysOpen = true;
-                popup.Opened += new EventHandler(OnPopupOpenend);
-                popup.Closed += new EventHandler(OnPopupClosed);
-            }
 
             appButton = GetTemplateChild(partAppButton) as RibbonDropDownButton;
-            appButtonClone = GetTemplateChild(partAppButtonClone) as RibbonDropDownButton;
+            appButtonClone = GetTemplateChild(partAppButtonClone) as FrameworkElement;
             appButton.PopupOpened += new RoutedEventHandler(appButton_PopupOpened);
+            appButton.PopupClosed += new RoutedEventHandler(appButton_PopupClosed);
 
             recentItemsList = GetTemplateChild(partRecentItemsList) as FrameworkElement;
+        }
+
+        void appButton_PopupClosed(object sender, RoutedEventArgs e)
+        {
+            IsOpen = false;
         }
 
 
@@ -159,19 +155,6 @@ namespace Odyssey.Controls
         }
 
 
-        protected virtual void OnPopupClosed(object sender, EventArgs e)
-        {
-            IsOpen = false;
-            Mouse.Capture(null);
-        }
-
-
-        protected virtual void OnPopupOpenend(object sender, EventArgs e)
-        {
-            AdjustApplicationButtons();
-            IsOpen = true;
-            Mouse.Capture(this, CaptureMode.SubTree);
-        }
 
         /// <summary>
         /// Ensures that both ApplicationMenu buttons are at the same screen location:
@@ -181,13 +164,13 @@ namespace Odyssey.Controls
             if (appButtonClone != null && appButton != null)
             {
                 Point p = appButton.PointToScreen(new Point());
-                Point p2 = appButtonClone.PointToScreen(new Point());
+                Point p2 = appButtonClone.PointFromScreen(p);
 
-                double dx = p2.X - p.X;
-                double dy = p2.Y - p.Y;
+                double dx = p2.X + Canvas.GetLeft(appButtonClone);
+                double dy = p2.Y  + Canvas.GetTop(appButtonClone);
                 appButtonClone.Visibility = dy >= -20 ? Visibility.Visible : Visibility.Hidden;
-                Thickness t = appButtonClone.Margin;
-                appButtonClone.Margin = new Thickness(t.Left-dx, t.Top-dy, 0.0, 0.0);
+                Canvas.SetLeft(appButtonClone, dx);
+                Canvas.SetTop(appButtonClone, dy);
             }
         }
 
@@ -278,13 +261,36 @@ namespace Odyssey.Controls
 
         static void OpenPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            RibbonApplicationMenu m = (RibbonApplicationMenu)o;
+            RibbonApplicationMenu menu = (RibbonApplicationMenu)o;
+            bool newValue = (bool)e.NewValue;
 
-            if (m.popup != null)
+            if (menu.appButton != null)
             {
-                m.popup.IsOpen = (bool)e.NewValue;
+                menu.appButton.IsDropDownPressed = newValue;
             }
-            RibbonBar.CollapseRibbonBarCommand.Execute(null, m);
+            if (newValue) menu.OnMenuOpened(); else menu.OnMenuClosed();
+        }
+
+        private object toolTip;
+
+        public event EventHandler Opened;
+
+        public event EventHandler OnClosed;
+
+        protected virtual void OnMenuClosed()
+        {
+            // restore the tooltip when the menu is closed:
+            ToolTip = toolTip;
+            if (OnClosed != null) OnClosed(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnMenuOpened()
+        {
+            // when the menu is open, the tooltip must not be shown:
+            toolTip = this.ToolTip;
+            ToolTip = null;
+            if (Opened != null) Opened(this, EventArgs.Empty);
+
         }
 
 
@@ -347,6 +353,35 @@ namespace Odyssey.Controls
                 return rect;
             }
             else return Rect.Empty;
+        }
+
+        #region IKeyboardCommand Members
+
+        void IKeyTipControl.ExecuteKeyTip()
+        {
+            this.Focus();
+            this.IsOpen = true;
+        }
+
+        #endregion
+
+        protected override System.Collections.IEnumerator LogicalChildren
+        {
+            get
+            {
+                return GetLogicalChildren().GetEnumerator();
+            }
+        }
+
+        private IEnumerable<object> GetLogicalChildren()
+        {
+            if (Header != null) yield return Header;
+            IEnumerator e = base.LogicalChildren;
+            while (e.MoveNext())
+            {
+                yield return e.Current;
+            }
+            if (Footer != null) yield return Footer;
         }
     }
 }

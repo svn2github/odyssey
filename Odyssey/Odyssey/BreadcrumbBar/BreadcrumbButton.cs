@@ -187,8 +187,8 @@ namespace Odyssey.Controls
             {
                 if (!(item is MenuItem) && !(item is Separator))
                 {
-                    
-                    MenuItem menuItem = new MenuItem();
+
+                    RibbonMenuItem menuItem = new RibbonMenuItem();
                     menuItem.DataContext = item;
                     BreadcrumbItem bi = item as BreadcrumbItem;
                     if (bi == null)

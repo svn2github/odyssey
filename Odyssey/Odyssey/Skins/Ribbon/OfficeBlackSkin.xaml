@@ -9,6 +9,8 @@
     <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, PopupContainerBgBrush}" Color="White"/>
     <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, WindowButtonPenColor}" Color="#FF939393"/>
 
+    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, ActiveTitleBrush}" Color="White" />
+    <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, InactiveTitleBrush}" Color="#FFE1E1E1" />
     <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, ActiveWindowBrush}" Color="#FF535353"/>
     <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, InactiveWindowBrush}" Color="#FF535353"/>
     <SolidColorBrush x:Key="{ComponentResourceKey odc:Skins, WindowForegroundBrush}" Color="White"/>
@@ -120,7 +122,8 @@
         <Style.Resources>
             <Style TargetType="{x:Type odc:RibbonChrome}">
                 <Setter Property="InnerBorderThickness" Value="0.2,0.5,0.2,0.5"/>
-                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="MouseOverBorderBrush" Value="#FF242424" />
+                <Setter Property="BorderBrush" Value="#FF242424"/>
                 <Setter Property="MouseOverBackground" Value="{StaticResource MouseOverWndButtonBrush}" />
                 <Setter Property="MousePressedBackground" Value="{StaticResource MousePressedWndButtonBrush}" />
             </Style>
@@ -140,7 +143,8 @@
         <Style.Resources>
             <Style TargetType="{x:Type odc:RibbonChrome}">
                 <Setter Property="InnerBorderThickness" Value="0.2,0.5,0.2,0.5"/>
-                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="BorderBrush" Value="#FF242424"/>
+                <Setter Property="MouseOverBorderBrush" Value="#FF242424" />
                 <Setter Property="MouseOverBackground" Value="{StaticResource MouseOverWndButtonBrush}" />
                 <Setter Property="MousePressedBackground" Value="{StaticResource MousePressedWndButtonBrush}" />
             </Style>
@@ -160,7 +164,8 @@
         <Style.Resources>
             <Style TargetType="{x:Type odc:RibbonChrome}">
                 <Setter Property="InnerBorderThickness" Value="0.2,0.5,0.2,0.5"/>
-                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="BorderBrush" Value="#FF242424"/>
+                <Setter Property="MouseOverBorderBrush" Value="#FF242424" />
                 <Setter Property="MouseOverBackground" Value="{StaticResource MouseOverWndButtonBrush}" />
                 <Setter Property="MousePressedBackground" Value="{StaticResource MousePressedWndButtonBrush}" />
             </Style>
@@ -180,7 +185,8 @@
         <Style.Resources>
             <Style TargetType="{x:Type odc:RibbonChrome}">
                 <Setter Property="InnerBorderThickness" Value="0.2,0.5,0.2,0.5"/>
-                <Setter Property="BorderBrush" Value="Black"/>
+                <Setter Property="MouseOverBorderBrush" Value="#FF242424" />
+                <Setter Property="BorderBrush" Value="#FF242424"/>
                 <Setter Property="MouseOverBackground" Value="{StaticResource MouseOverWndButtonBrush}" />
                 <Setter Property="MousePressedBackground" Value="{StaticResource MousePressedWndButtonBrush}" />
             </Style>

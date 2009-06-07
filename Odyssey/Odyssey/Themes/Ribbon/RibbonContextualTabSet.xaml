@@ -14,7 +14,7 @@
 
     <ControlTemplate TargetType="{x:Type odc:RibbonContextualTabSet}" x:Key="RibbonContextualTabSetTemplate">
         <StackPanel>
-            <Border BorderThickness="1,0,1,0" SnapsToDevicePixels="True" BorderBrush="{StaticResource RibbonContextualTabSetBorderBrush}"  Height="24">
+            <Border BorderThickness="1,0,1,0"  BorderBrush="{StaticResource RibbonContextualTabSetBorderBrush}"  Height="24">
                 <Grid>
                     <Grid>
                         <Grid.Background>
@@ -28,18 +28,28 @@
                         </Grid.OpacityMask>
                     </Grid>
 
-                    <ContentPresenter Content="{TemplateBinding Title}" 
+                    <ContentPresenter Content="{TemplateBinding Title}"  x:Name="title"
                                       TextBlock.Foreground="{DynamicResource {ComponentResourceKey odc:Skins, RibbonBarForgroundBrush}}"
                                       Margin="4,1,4,1" VerticalAlignment="Center" HorizontalAlignment="Center" />
                 </Grid>
             </Border>
-            <Border BorderThickness="1,0,1,0" SnapsToDevicePixels="True" BorderBrush="{StaticResource RibbonContextualTabSetBorderBrush2}" Height="16"/>
+            <Border BorderThickness="1,0,1,0"  BorderBrush="{StaticResource RibbonContextualTabSetBorderBrush2}" Height="16"/>
         </StackPanel>
+        <ControlTemplate.Triggers>
+            <DataTrigger Binding="{Binding Path=IsGlassOn, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=odc:RibbonWindow}}" Value="True">
+                <Setter Property="BitmapEffect" TargetName="title">
+                    <Setter.Value>
+                        <OuterGlowBitmapEffect GlowColor="White" GlowSize="3" Opacity="0.75"  />
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+        </ControlTemplate.Triggers>
     </ControlTemplate>
 
     <Style TargetType="{x:Type odc:RibbonContextualTabSet}">
         <Setter Property="Template" Value="{StaticResource RibbonContextualTabSetTemplate}"/>
         <Setter Property="Color" Value="Tomato"/>
+        <Setter Property="IsTabStop" Value="False" />
     </Style>
 
 </ResourceDictionary>

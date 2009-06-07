@@ -13,10 +13,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.Windows.Controls.Primitives;
+using Odyssey.Controls.Interfaces;
 
 namespace Odyssey.Controls
 {
-    public class OutlookSection:HeaderedContentControl
+    public class OutlookSection:HeaderedContentControl,IKeyTipControl
     {
         static OutlookSection()
         {
@@ -63,7 +64,17 @@ namespace Odyssey.Controls
         }
 
         public static readonly DependencyProperty IsSelectedProperty =
-            DependencyProperty.Register("IsSelected", typeof(bool), typeof(OutlookSection), new UIPropertyMetadata(false));
+            DependencyProperty.Register("IsSelected", typeof(bool), typeof(OutlookSection), new UIPropertyMetadata(false, IsSelectedPropertyChanged));
+
+        private static void IsSelectedPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            ((OutlookSection)o).OnSelectedPropertyChanged((bool)e.OldValue, (bool)e.NewValue);
+        }
+
+        protected virtual void OnSelectedPropertyChanged(bool oldValue, bool newValue)
+        {
+            if (newValue) OutlookBar.SelectedSection = this;
+        }
 
         /// <summary>
         /// Occurs when the section button is clicked,.
@@ -104,5 +115,14 @@ namespace Odyssey.Controls
         /// Gets or sets the OutlookBar to which this Section is assigned.
         /// </summary>
         internal OutlookBar OutlookBar { get; set; }
+
+        #region IKeyTipControl Members
+
+        void IKeyTipControl.ExecuteKeyTip()
+        {
+            IsSelected = true;
+        }
+
+        #endregion
     }
 }

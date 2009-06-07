@@ -16,6 +16,7 @@ using System.Windows.Controls.Primitives;
 using System.Diagnostics;
 using System.Collections;
 using System.ComponentModel;
+using Odyssey.Controls.Interfaces;
 
 #region changelog
 // Version 1.3.17
@@ -30,9 +31,10 @@ namespace Odyssey.Controls
 {
     //UNDONE: Section.Content sometimes not visible when IsMaximized has changed. 
     [TemplatePart(Name = partMinimizedButtonContainer)]
-    public class OutlookBar : HeaderedItemsControl
+    public class OutlookBar : HeaderedItemsControl,IKeyTipControl
     {
         const string partMinimizedButtonContainer = "PART_MinimizedContainer";
+        const string partPopup = "PART_Popup";
         static OutlookBar()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(OutlookBar), new FrameworkPropertyMetadata(typeof(OutlookBar)));
@@ -341,12 +343,52 @@ namespace Odyssey.Controls
             ApplySections();
         }
 
+        private Popup popup;
+
         public override void OnApplyTemplate()
         {
+            if (popup != null)
+            {
+                popup.Closed -= OnPopupClosed;
+                popup.Opened -= OnPopupOpened;
+            }
             minimizedButtonContainer = this.GetTemplateChild(partMinimizedButtonContainer) as FrameworkElement;
+            popup = this.GetTemplateChild(partPopup) as Popup;
+            if (popup != null)
+            {
+                popup.Closed += new EventHandler(OnPopupClosed);
+                popup.Opened += new EventHandler(OnPopupOpened);
+            }
+
+            ToggleButton btn = GetTemplateChild("PART_ToggleButton") as ToggleButton;
+            if (btn != null)
+            {
+                btn.PreviewMouseLeftButtonUp += new MouseButtonEventHandler(btn_PreviewMouseLeftButtonUp);
+            }
 
             base.OnApplyTemplate();
         }
+
+        void btn_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Mouse.Capture(null);
+            popup.StaysOpen = false;
+        }
+
+
+
+        protected virtual void OnPopupOpened(object sender, EventArgs e)
+        {
+            IsPopupVisible = true;
+            Mouse.Capture(this, CaptureMode.SubTree);
+        }
+
+        protected virtual void OnPopupClosed(object sender, EventArgs e)
+        {
+            IsPopupVisible = false;
+            Mouse.Capture(null);
+        }
+
 
 
         private ObservableCollection<OutlookSection> sections;
@@ -414,6 +456,7 @@ namespace Odyssey.Controls
         /// <param name="isExpanded"></param>
         protected virtual void OnMaximizedChanged(bool isExpanded)
         {
+            if (isExpanded) IsPopupVisible = false;
             EnsureSectionContentIsVisible();
 
             if (isExpanded)
@@ -428,6 +471,7 @@ namespace Odyssey.Controls
                 RaiseEvent(new RoutedEventArgs(CollapsedEvent));
             }
         }
+
 
 
         /// <summary>
@@ -460,9 +504,10 @@ namespace Odyssey.Controls
         /// </summary>
         private void EnsureSectionContentIsVisible()
         {
-            object content = SectionContent;
+            object content = SelectedSection != null ? SelectedSection.Content : null;
             SectionContent = null;  // set temporarily to null, so resetting to the current content will have an effect.
-            SectionContent = content;
+            CollapsedSectionContent = IsMaximized ? null : content;
+            SectionContent = IsMaximized ? content : null;
         }
 
 
@@ -557,6 +602,11 @@ namespace Odyssey.Controls
         /// <param name="isPopupVisible"></param>
         protected virtual void OnPopupVisibleChanged(bool isPopupVisible)
         {
+            if (popup != null)
+            {
+                popup.StaysOpen = true;
+                popup.IsOpen = isPopupVisible;
+            }
             if (isPopupVisible)
             {
                 RaiseEvent(new RoutedEventArgs(PopupOpenedEvent));
@@ -601,7 +651,11 @@ namespace Odyssey.Controls
         }
 
         public static readonly DependencyProperty SelectedSectionIndexProperty =
-            DependencyProperty.Register("SelectedSectionIndex", typeof(int), typeof(OutlookBar), new UIPropertyMetadata(0, SelectedIndexPropertyChanged));
+            DependencyProperty.Register("SelectedSectionIndex", typeof(int), typeof(OutlookBar), new 
+                FrameworkPropertyMetadata(
+                0, 
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                SelectedIndexPropertyChanged));
 
         private static void SelectedIndexPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -645,7 +699,8 @@ namespace Odyssey.Controls
                 if (selected)
                 {
                     SelectedSectionIndex = index;
-                    SectionContent = section.Content;
+                    SectionContent = IsMaximized ? section.Content : null;
+                    CollapsedSectionContent = IsMaximized ? null : section.Content;
                 }
             }
             RaiseEvent(new RoutedPropertyChangedEventArgs<OutlookSection>(oldSection, newSection, SelectedSectionChangedEvent));
@@ -679,6 +734,23 @@ namespace Odyssey.Controls
         private static readonly DependencyPropertyKey SectionContentPropertyKey =
             DependencyProperty.RegisterReadOnly("SectionContent", typeof(object), typeof(OutlookBar), new UIPropertyMetadata(null));
         public static readonly DependencyProperty SectionContentProperty = SectionContentPropertyKey.DependencyProperty;
+
+
+
+
+        /// <summary>
+        /// Gets or sets the content for the popup.
+        /// </summary>
+        internal object CollapsedSectionContent
+        {
+            get { return (object)GetValue(CollapsedSectionContentProperty); }
+            set { SetValue(CollapsedSectionContentPropertyKey, value); }
+        }
+
+       
+        private static readonly DependencyPropertyKey CollapsedSectionContentPropertyKey =
+            DependencyProperty.RegisterReadOnly("CollapsedSectionContent", typeof(object), typeof(OutlookBar), new UIPropertyMetadata(null));
+        public static readonly DependencyProperty CollapsedSectionContentProperty = SectionContentPropertyKey.DependencyProperty;
 
 
 
@@ -873,40 +945,29 @@ namespace Odyssey.Controls
         public static readonly DependencyProperty NavigationPaneTextProperty =
             DependencyProperty.Register("NavigationPaneText", typeof(object), typeof(OutlookBar), new UIPropertyMetadata("Navigation Pane"));
 
-        [Obsolete("Use SkinManager instead.")]
-        public enum OdysseySkin
+
+        protected override IEnumerator LogicalChildren
         {
-            Invalid
+            get
+            {
+                return GetLogicalChildren().GetEnumerator();
+            }
         }
 
-        /// <summary>
-        /// Gets or sets the desired skin.
-        /// </summary>    
-        [Obsolete("Use SkinManager instead.")]
-        public OdysseySkin Skin
+        protected virtual IEnumerable GetLogicalChildren()
         {
-            get { return OdysseySkin.Invalid; }
-            set { throw new InvalidOperationException("Skin property is obsolete. Use SkinManager instead."); }
-            //get { return (OdysseySkin)GetValue(SkinProperty); }
-            //set { SetValue(SkinProperty, value); }
+            foreach (var section in Sections) yield return section;
+            if (SelectedSection != null) yield return SelectedSection.Content;
         }
 
-        //public static readonly DependencyProperty SkinProperty =
-        //    DependencyProperty.Register("Skin", typeof(OdysseySkin), typeof(OutlookBar),
-        //    new FrameworkPropertyMetadata(OdysseySkin.Default, FrameworkPropertyMetadataOptions.AffectsRender, SkinPropertyPropertyChanged));
 
+        #region IKeyTipControl Members
 
-        //private static void SkinPropertyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        //{
-        //    OutlookBar bar = (OutlookBar)d;
-        //    OdysseySkin skin = (OdysseySkin)e.NewValue;
-        //    bar.OnSkinChanged(skin);
-        //}
+        void IKeyTipControl.ExecuteKeyTip()
+        {
+            this.IsMaximized ^= true;
+        }
 
-        //protected virtual void OnSkinChanged(OdysseySkin skin)
-        //{
-        //   // ApplySkin();
-        //}
-
+        #endregion
     }
 }

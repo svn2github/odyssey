@@ -8,6 +8,8 @@ using System.Windows.Markup;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Input;
+using Odyssey.Controls.Ribbon.Interfaces;
+using Odyssey.Controls.Interfaces;
 
 #region Copyright
 // Odyssey.Controls.Ribbonbar
@@ -17,13 +19,18 @@ using System.Windows.Input;
 namespace Odyssey.Controls
 {
    [ContentProperty("Items")]
-    public class RibbonMenuItem:MenuItem
+    public class RibbonMenuItem:MenuItem,IKeyTipControl
     {
        const string partPopup = "PART_Popup";
 
         static RibbonMenuItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(RibbonMenuItem), new FrameworkPropertyMetadata(typeof(RibbonMenuItem)));
+        }
+
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new RibbonMenuItem();
         }
 
 
@@ -76,6 +83,8 @@ namespace Odyssey.Controls
             }
         }
 
+
+
         protected override void OnSubmenuOpened(RoutedEventArgs e)
         {
             base.OnSubmenuOpened(e);
@@ -87,6 +96,23 @@ namespace Odyssey.Controls
             base.OnSubmenuClosed(e);
             if (popup != null) popup.IsOpen = false;
         }
+      
 
+
+        #region IKeyboardCommand Members
+
+        public void ExecuteKeyTip()
+        {
+            if (this.HasItems)
+            {
+                IsSubmenuOpen ^= true;
+            }
+            else
+            {
+                OnClick();
+            }
+        }
+
+        #endregion
     }
 }

@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Controls.Primitives;
 using Odyssey.Controls.Ribbon.Interfaces;
+using Odyssey.Controls.Interfaces;
 
 #region Copyright
 // Odyssey.Controls.Ribbonbar
@@ -22,7 +23,7 @@ using Odyssey.Controls.Ribbon.Interfaces;
 namespace Odyssey.Controls
 {
 
-    public class RibbonToggleButton : ToggleButton,IRibbonButton
+    public class RibbonToggleButton : ToggleButton,IRibbonButton,IKeyTipControl
     {
         static RibbonToggleButton()
         {
@@ -76,5 +77,14 @@ namespace Odyssey.Controls
         public static readonly DependencyProperty CornerRadiusProperty =
             DependencyProperty.Register("CornerRadius", typeof(CornerRadius), typeof(RibbonToggleButton), new UIPropertyMetadata(new CornerRadius(4)));
 
+
+        #region IKeyboardCommand Members
+
+        public void ExecuteKeyTip()
+        {
+            OnClick();
+        }
+
+        #endregion
     }
 }

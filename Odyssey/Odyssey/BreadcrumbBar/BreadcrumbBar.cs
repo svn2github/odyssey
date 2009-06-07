@@ -53,7 +53,28 @@ namespace Odyssey.Controls
         /// <summary>
         /// Gets the number of the first breadcrumb to hide in the path if descending breadcrumbs are selected.
         /// </summary>
-        const int breadcrumbsToHide = 1;
+        int BreadcrumbsToHide
+        {
+            get { return HideRootNode ? 1 : 0; }
+        }
+
+
+
+        /// <summary>
+        /// Gets or sets wether the root node is removed from the breadcrumb bar if any child node is selected.
+        /// This is a dependency property.
+        /// </summary>
+        public bool HideRootNode
+        {
+            get { return (bool)GetValue(HideRootNodeProperty); }
+            set { SetValue(HideRootNodeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HideRootNode.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HideRootNodeProperty =
+            DependencyProperty.Register("HideRootNode", typeof(bool), typeof(BreadcrumbBar), new UIPropertyMetadata(true));
+
+
 
         #region Dependency Properties
 
@@ -92,18 +113,22 @@ namespace Odyssey.Controls
 
         public static readonly DependencyProperty RootProperty =
             DependencyProperty.Register("Root", typeof(object), typeof(BreadcrumbBar), new FrameworkPropertyMetadata(null,
-                FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsArrange,
-                RootPropertyChanged));
+                FrameworkPropertyMetadataOptions.AffectsMeasure | 
+                FrameworkPropertyMetadataOptions.AffectsRender | 
+                FrameworkPropertyMetadataOptions.AffectsArrange,
+                OnRootPropertyChanged));
 
         public static readonly DependencyProperty SelectedItemProperty =
             DependencyProperty.Register("SelectedItem", typeof(object), typeof(BreadcrumbBar), new FrameworkPropertyMetadata(null,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsMeasure,
-                SelectedItemPropertyChanged));
+                FrameworkPropertyMetadataOptions.AffectsArrange | 
+                FrameworkPropertyMetadataOptions.AffectsMeasure | 
+                FrameworkPropertyMetadataOptions.AffectsMeasure,
+                OnSelectedItemPropertyChanged));
 
         private static readonly DependencyPropertyKey SelectedBreadcrumbPropertyKey =
             DependencyProperty.RegisterReadOnly("SelectedBreadcrumb", typeof(BreadcrumbItem), typeof(BreadcrumbBar), new FrameworkPropertyMetadata(null,
                 FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.AffectsArrange,
-                SelectedBreadcrumbPropertyChanged));
+                OnSelectedBreadcrumbPropertyChanged));
         public static readonly DependencyProperty SelectedBreadcrumbProperty = SelectedBreadcrumbPropertyKey.DependencyProperty;
 
         public static readonly DependencyProperty IsOverflowPressedProperty =
@@ -111,9 +136,19 @@ namespace Odyssey.Controls
 
         private static readonly DependencyPropertyKey RootItemPropertyKey =
             DependencyProperty.RegisterReadOnly("RootItem", typeof(BreadcrumbItem), typeof(BreadcrumbBar), new FrameworkPropertyMetadata(null,
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsMeasure
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsMeasure,
+                OnRootItemPropertyChanged
                 ));
         private static readonly DependencyProperty RootItemProperty = RootItemPropertyKey.DependencyProperty;
+
+        private static void OnRootItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((BreadcrumbBar)d).OnRootItemChanged((BreadcrumbItem)e.OldValue, (BreadcrumbItem)e.NewValue);
+        }
+
+        protected virtual void OnRootItemChanged(BreadcrumbItem oldValue, BreadcrumbItem newValue)
+        {
+        }
 
         public static readonly DependencyProperty BreadcrumbItemTemplateSelectorProperty =
             DependencyProperty.Register("BreadcrumbItemTemplateSelector", typeof(DataTemplateSelector), typeof(BreadcrumbBar), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits));
@@ -135,10 +170,10 @@ namespace Odyssey.Controls
             DependencyProperty.Register("SeparatorString", typeof(string), typeof(BreadcrumbBar), new UIPropertyMetadata("\\"));
 
         public static readonly DependencyProperty PathProperty =
-            DependencyProperty.Register("Path", typeof(string), typeof(BreadcrumbBar), new UIPropertyMetadata(null, PathPropertyChanged));
+            DependencyProperty.Register("Path", typeof(string), typeof(BreadcrumbBar), new FrameworkPropertyMetadata("",FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, PathPropertyChanged));
 
         public static readonly DependencyProperty DropDownItemsSourceProperty =
-    DependencyProperty.Register("DropDownItemsSource", typeof(IEnumerable), typeof(BreadcrumbBar), new UIPropertyMetadata(null, DropDownItemsSourcePropertyChanged));
+    DependencyProperty.Register("DropDownItemsSource", typeof(IEnumerable), typeof(BreadcrumbBar), new UIPropertyMetadata(null, OnDropDownItemsSourcePropertyChanged));
 
 
         public static readonly DependencyProperty SelectedDropDownIndexProperty =
@@ -170,6 +205,7 @@ namespace Odyssey.Controls
         public static readonly RoutedEvent ApplyPropertiesEvent = EventManager.RegisterRoutedEvent("ApplyProperties",
             RoutingStrategy.Bubble, typeof(ApplyPropertiesEventHandler), typeof(BreadcrumbBar));
 
+       
         public static readonly RoutedEvent SelectedBreadcrumbChangedEvent = EventManager.RegisterRoutedEvent("SelectedBreadcrumbChanged",
             RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<BreadcrumbItem>), typeof(BreadcrumbBar));
 
@@ -267,7 +303,7 @@ namespace Odyssey.Controls
             bar.OnDropDownOpenChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
-        static void SelectedBreadcrumbPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        static void OnSelectedBreadcrumbPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             BreadcrumbBar bar = d as BreadcrumbBar;
             BreadcrumbItem selected = e.NewValue as BreadcrumbItem;
@@ -292,7 +328,7 @@ namespace Odyssey.Controls
         /// <summary>
         /// Occurs when the selected BreadcrumbItem is changed.
         /// </summary>
-        public event RoutedEventHandler SelectedBreadcrumbChanged
+        public event RoutedPropertyChangedEventHandler<BreadcrumbItem> SelectedBreadcrumbChanged
         {
             add { AddHandler(BreadcrumbBar.SelectedBreadcrumbChangedEvent, value); }
             remove { RemoveHandler(BreadcrumbBar.SelectedBreadcrumbChangedEvent, value); }
@@ -313,6 +349,7 @@ namespace Odyssey.Controls
         {
             BreadcrumbBar bar = d as BreadcrumbBar;
             string newPath = e.NewValue as string;
+         //   bar.PathBinding = newPath;
 
             if (!bar.IsInitialized)
             {
@@ -339,7 +376,7 @@ namespace Odyssey.Controls
         /// </summary>
         protected virtual void OnPathChanged(string oldValue, string newValue)
         {
-            BuildBreadcrumbsFromPath(Path);
+            BuildBreadcrumbsFromPath(newValue);
             if (IsLoaded)
             {
                 RoutedPropertyChangedEventArgs<string> args = new RoutedPropertyChangedEventArgs<string>(oldValue, newValue, PathChangedEvent);
@@ -365,8 +402,9 @@ namespace Odyssey.Controls
                 return false;
             }
 
+
             newPath = RemoveLastEmptySeparator(newPath);
-            string[] traces = newPath.Split(new string[] { SeparatorString }, StringSplitOptions.None);
+            string[] traces = newPath.Split(new string[] { SeparatorString }, StringSplitOptions.RemoveEmptyEntries);
             if (traces.Length == 0) RootItem.SelectedItem = null;
             int index = 0;
 
@@ -374,8 +412,8 @@ namespace Odyssey.Controls
 
             // if the root is specified as first trace, then skip:
             int length = traces.Length;
-            int max = breadcrumbsToHide;
-            if (max > 0 && traces[index] == (RootItem.TraceValue))
+            int max = BreadcrumbsToHide;
+            if (traces.Length>index && max > 0 && traces[index] == (RootItem.TraceValue))
             {
                 length--;
                 index++;
@@ -425,6 +463,7 @@ namespace Odyssey.Controls
             return true;
         }
 
+
         /// <summary>
         /// Remove the last separator string from the path if there is no additional trace.
         /// </summary>
@@ -441,7 +480,7 @@ namespace Odyssey.Controls
             return path;
         }
 
-        static void DropDownItemsSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        static void OnDropDownItemsSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             BreadcrumbBar bar = d as BreadcrumbBar;
 
@@ -507,7 +546,8 @@ namespace Odyssey.Controls
         {
             if (e.OriginalSource == RootItem)
             {
-                Path = GetEditPath();
+                //TODO: This causes Path binding not to work (see PasswordSafe):
+                //Path = GetEditPath();
             }
         }
 
@@ -537,11 +577,17 @@ namespace Odyssey.Controls
         /// <summary>
         /// Remove the focus from a button when it was clicked.
         /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
         private void buttonClickedEvent(object sender, RoutedEventArgs e)
         {
-            if (this.IsKeyboardFocusWithin)
+            if (!this.IsDropDownOpen)
             {
-                this.Focus();
+                // focus only if it has aleady focus and the button that was pressed is not the drop down button of the combobox:
+                if (this.IsKeyboardFocusWithin && (e.OriginalSource is BreadcrumbButton))
+                {
+                    this.Focus();
+                }
             }
         }
 
@@ -614,6 +660,7 @@ namespace Odyssey.Controls
         {
             Size size = base.ArrangeOverride(arrangeBounds);
             CheckOverflowImage();
+           
             return size;
         }
 
@@ -648,19 +695,18 @@ namespace Odyssey.Controls
             {
                 foreach (object trace in item.Items)
                 {
-                    MenuItem menuItem = new MenuItem();
+                    MenuItem menuItem = new RibbonMenuItem();
                     menuItem.Tag = trace;
                     BreadcrumbItem bcItem = item.ContainerFromItem(trace);
 
-                    // preserve underscores:
-                    menuItem.Header = bcItem.TraceValue.Replace("_", "__");
                     menuItem.Click += new RoutedEventHandler(menuItem_Click);
                     menuItem.Icon = GetImage(bcItem != null ? bcItem.Image : null);
                     if (trace == RootItem.SelectedItem) menuItem.FontWeight = FontWeights.Bold;
                     traces.Add(menuItem);
+                    if (bcItem != null) menuItem.Header = bcItem.TraceValue;
                 }
                 traces.Insert(0, new Separator());
-                MenuItem rootMenuItem = new MenuItem();
+                MenuItem rootMenuItem = new RibbonMenuItem();
                 rootMenuItem.Header = item.TraceValue;
                 rootMenuItem.Command = BreadcrumbBar.SelectRootCommand;
                 rootMenuItem.CommandParameter = item;
@@ -744,16 +790,16 @@ namespace Odyssey.Controls
             set { SetValue(RootProperty, value); }
         }
 
-        private static void RootPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnRootPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             BreadcrumbBar bar = d as BreadcrumbBar;
-            bar.OnRootChanged(e.OldValue, e.NewValue);
+            bar.OnRootChanged(d, e.OldValue, e.NewValue);
         }
 
-        private static void SelectedItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnSelectedItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             BreadcrumbBar bar = d as BreadcrumbBar;
-            bar.OnSelectedItemChanged(e.OldValue, e.NewValue);
+            bar.OnSelectedItemChanged(d, e.OldValue, e.NewValue);
         }
 
         /// <summary>
@@ -761,7 +807,7 @@ namespace Odyssey.Controls
         /// </summary>
         /// <param name="oldvalue"></param>
         /// <param name="newValue"></param>
-        protected virtual void OnSelectedItemChanged(object oldvalue, object newValue)
+        protected virtual void OnSelectedItemChanged(object sender, object oldvalue, object newValue)
         {
         }
 
@@ -770,7 +816,7 @@ namespace Odyssey.Controls
         /// </summary>
         /// <param name="oldValue"></param>
         /// <param name="newValue"></param>
-        public virtual void OnRootChanged(object oldValue, object newValue)
+        protected virtual void OnRootChanged(object sender, object oldValue, object newValue)
         {
             newValue = GetFirstItem(newValue);
             BreadcrumbItem oldRoot = oldValue as BreadcrumbItem;
@@ -1037,7 +1083,7 @@ namespace Odyssey.Controls
             while (item != null)
             {
                 if (sb.Length > 0) sb.Append(separator);
-                if (index >= breadcrumbsToHide || item.SelectedItem == null)
+                if (index >= BreadcrumbsToHide || item.SelectedItem == null)
                 {
                     sb.Append(item.GetTracePathValue());
                 }
@@ -1094,6 +1140,25 @@ namespace Odyssey.Controls
         {
             get { return (string)GetValue(SeparatorStringProperty); }
             set { SetValue(SeparatorStringProperty, value); }
+        }
+
+
+
+        public string PathBinding
+        {
+            get { return (string)GetValue(PathBindingProperty); }
+            set { SetValue(PathBindingProperty, value); }
+        }
+
+
+
+
+        public static readonly DependencyProperty PathBindingProperty =
+            DependencyProperty.Register("PathBinding", typeof(string), typeof(BreadcrumbBar), new UIPropertyMetadata("", OnPathBindingPropertyChanged));
+
+        private static void OnPathBindingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            d.SetValue(PathProperty, e.NewValue);
         }
 
 
@@ -1231,7 +1296,7 @@ namespace Odyssey.Controls
 
         protected override void OnMouseLeave(MouseEventArgs e)
         {
-            if (this.IsKeyboardFocusWithin) this.Focus();
+          //  if (this.IsKeyboardFocusWithin) this.Focus();
             base.OnMouseLeave(e);
         }
 
@@ -1329,5 +1394,6 @@ namespace Odyssey.Controls
         /// Gets or sets the ImageBinding property that will be set to every child BreadcrumbItem. This is not a dependency property!
         /// </summary>
         public BindingBase ImageBinding { get; set; }
+
     }
 }

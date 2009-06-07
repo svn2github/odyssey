@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,8 @@ using Odyssey.Controls.Classes;
 using Odyssey.Controls.Ribbon.Interfaces;
 using System.Collections.Specialized;
 using System.Collections;
+using Odyssey.Ribbon.EventArgs;
+using Odyssey.Common;
 
 #region Copyright
 // Odyssey.Controls.Ribbonbar
@@ -33,12 +36,15 @@ namespace Odyssey.Controls
     [TemplatePart(Name = partPopup)]
     [TemplatePart(Name = partTabItemContainer)]
     [TemplatePart(Name = partPopupGroupPanel)]
-    public partial class RibbonBar : Control
+    public partial class RibbonBar : Selector
     {
         const string partGroupPanel = "PART_GroupPanel";
         const string partPopupGroupPanel = "PART_PopupGroupPanel";
         const string partPopup = "PART_Popup";
         const string partTabItemContainer = "PART_TabItemContainer";
+        const string partLeftTitle = "PART_LeftWindowTitlePlaceHolder";
+        const string partRightTitle = "PART_RightWindowTitlePlaceHolder";
+        const string partTopQAPresenter = "PART_TopQaPresenter";
 
         static RibbonBar()
         {
@@ -59,6 +65,7 @@ namespace Odyssey.Controls
             RegisterHandlers();
         }
 
+
         /// <summary>
         /// Closes any popups when some known routed events occured.
         /// </summary>
@@ -66,7 +73,7 @@ namespace Odyssey.Controls
         {
             FrameworkElement fe = e.OriginalSource as FrameworkElement;
             if (fe != null && fe.TemplatedParent is RibbonGroup) return;
-            if (fe != null && fe.TemplatedParent !=null) return;
+            if (fe != null && fe.TemplatedParent != null) return;
             if (popup != null && !(e.OriginalSource is RibbonDropDownButton)) popup.IsOpen = false;
             IsMenuOpen = false;
             RibbonGroup.CloseOpenedPopup();
@@ -94,7 +101,7 @@ namespace Odyssey.Controls
             if (((e.OriginalSource is IRibbonButton) || (e.OriginalSource is MenuItem)))
             {
                 RibbonButton btn = e.OriginalSource as RibbonButton;
-                if (btn!= null)
+                if (btn != null)
                 {
                     if (btn.TemplatedParent is RibbonGallery)
                     {
@@ -125,10 +132,27 @@ namespace Odyssey.Controls
             if (SelectedTabIndex >= 0) SelectedIndexChanged(this, e);
         }
 
+        /// <summary>
+        /// Occurs when the selected tab is changed.
+        /// </summary>
+        public event RoutedPropertyChangedEventHandler<int> SelectedTabIndexChanged
+        {
+            add { AddHandler(RibbonBar.SelectedTabIndexChangedEvent, value); }
+            remove { RemoveHandler(RibbonBar.SelectedTabIndexChangedEvent, value); }
+        }
+
         private Control groupPanel;
         private Control popupGroupPanel;
         private Popup popup;
         private Panel tabItemContainer;
+        private FrameworkElement leftTitleControl;
+        private FrameworkElement rightTitleControl;
+        private FrameworkElement topQAPresenterControl;
+
+        /// <summary>
+        /// Gets the popup content. This property is used by RibbonToolTip.
+        /// </summary>
+        protected internal Popup Popup { get { return popup; } }
 
         public override void OnApplyTemplate()
         {
@@ -143,6 +167,9 @@ namespace Odyssey.Controls
                 popup.Closed -= OnPopupClosed;
             }
 
+            leftTitleControl = GetTemplateChild(partLeftTitle) as FrameworkElement;
+            rightTitleControl = GetTemplateChild(partRightTitle) as FrameworkElement;
+            topQAPresenterControl = GetTemplateChild(partTopQAPresenter) as FrameworkElement;
 
             popup = GetTemplateChild(partPopup) as Popup;
 
@@ -216,6 +243,14 @@ namespace Odyssey.Controls
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
             Size size = base.ArrangeOverride(arrangeBounds);
+
+            CalculateContextualTabSetPos();
+            CalculateTitleBarPosition();
+            return size;
+        }
+
+        private void CalculateContextualTabSetPos()
+        {
             RibbonContextualTabSet set = ContextualTabSet;
             if (set != null)
             {
@@ -223,8 +258,66 @@ namespace Odyssey.Controls
                 foreach (var tab in set.Tabs) w += tab.DesiredSize.Width;
                 set.Width = w;
             }
-            return size;
         }
+
+        /// <summary>
+        /// Calculates the position and size for the title bar depending on some named template controls.
+        /// </summary>
+        private void CalculateTitleBarPosition()
+        {
+            if (!IsContextualTabVisible)
+            {
+                CalculateTitleBarPosWithoutContextualTab();
+            }
+            else
+            {
+                CalculateTitleBarPosWithContextualTab();
+            }
+        }
+
+        private FrameworkElement windowTitle
+        {
+            get { return this.GetTemplateChild("PART_WindowTitle") as FrameworkElement; }
+        }
+
+        private FrameworkElement buttonsPlaceHolder
+        {
+            get { return this.GetTemplateChild("PART_ButtonsPlaceholder") as FrameworkElement; }
+        }
+
+        private FrameworkElement titlePlaceHolder
+        {
+            get { return this.GetTemplateChild("PART_TitlePlaceholder") as FrameworkElement; }
+        }
+
+
+
+        private void CalculateTitleBarPosWithContextualTab()
+        {
+
+            Point p1 = rightTitleControl.TranslatePoint(new Point(), titlePlaceHolder);
+
+            Point p2 = buttonsPlaceHolder.TranslatePoint(new Point(), titlePlaceHolder);
+            Double w = p2.X - p1.X;
+            Double w2 = leftTitleControl.ActualWidth;
+            if (w2 > w)
+            {
+                p1 = leftTitleControl.TranslatePoint(new Point(), titlePlaceHolder);
+                w = w2;
+            }
+            Canvas.SetLeft(windowTitle, p1.X);
+            windowTitle.Width = Math.Max(0.0, w);
+        }
+
+
+        private void CalculateTitleBarPosWithoutContextualTab()
+        {
+            Point p1 = topQAPresenterControl.TranslatePoint(new Point(topQAPresenterControl.ActualWidth, 0), titlePlaceHolder);
+            Point p2 = buttonsPlaceHolder.TranslatePoint(new Point(), titlePlaceHolder);
+            Canvas.SetLeft(windowTitle, p1.X);
+            windowTitle.Width = Math.Max(0.0, p2.X - p1.X);
+        }
+
 
 
         const double MIN_RIBBON_WIDTH = 240;
@@ -283,6 +376,7 @@ namespace Odyssey.Controls
             return left;
         }
 
+
         private double CalculateGroupsWidth()
         {
             double width = 0;
@@ -336,6 +430,50 @@ namespace Odyssey.Controls
             }
             return false;
         }
+
+
+
+        public static bool GetCloseDropDownOnClick(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(CloseDropDownOnClickProperty);
+        }
+
+        public static void SetCloseDropDownOnClick(DependencyObject obj, bool value)
+        {
+            obj.SetValue(CloseDropDownOnClickProperty, value);
+        }
+
+        // Using a DependencyProperty as the backing store for AffectsControlDropDown.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CloseDropDownOnClickProperty =
+            DependencyProperty.RegisterAttached("CloseDropDownOnClickProperty", typeof(bool), typeof(Control),
+                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender | FrameworkPropertyMetadataOptions.Inherits));
+
+
+
+
+        /// <summary>
+        /// Gets wether the controls affects a dropdown window to close when it is clicked.
+        /// This is an ineritable  attached property.
+        /// </summary>
+        public static bool GetAffectsDropDown(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(AffectsDropDownProperty);
+        }
+
+        /// <summary>
+        /// Sets wether the controls affects a dropdown window to close when it is clicked.
+        /// This is an inheritable  attached property.
+        /// </summary>
+        public static void SetAffectsDropDown(DependencyObject obj, bool value)
+        {
+            obj.SetValue(AffectsDropDownProperty, value);
+        }
+
+        public static readonly DependencyProperty AffectsDropDownProperty =
+            DependencyProperty.RegisterAttached("AffectsDropDown", typeof(bool), typeof(RibbonBar),
+            new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.SubPropertiesDoNotAffectRender | FrameworkPropertyMetadataOptions.Inherits));
+
+
 
         /// <summary>
         /// Gets or sets the selected TabItem
@@ -393,8 +531,8 @@ namespace Odyssey.Controls
 
         protected override void OnLostMouseCapture(MouseEventArgs e)
         {
-            base.OnLostMouseCapture(e);
             CheckPopupTabToClose(e);
+            base.OnLostMouseCapture(e);
         }
 
         private void CheckPopupTabToClose(MouseEventArgs e)
@@ -402,13 +540,13 @@ namespace Odyssey.Controls
             if (popup == null) return;
             if (!CanMinimize) return;
             FrameworkElement fe = e.OriginalSource as FrameworkElement;
-            if (fe != null && fe.TemplatedParent != null) return;
-            if (Mouse.Captured != this && popup != null)
+            //      if (fe != null && fe.TemplatedParent != null) return;
+            FrameworkElement captured = Mouse.Captured as FrameworkElement;
+            if (captured != this && popup != null)
             {
                 UIElement child = this.popup.Child;
                 if (e.OriginalSource == this)
                 {
-                    FrameworkElement captured = Mouse.Captured as FrameworkElement;
                     if (captured != null && captured.TemplatedParent != null) return;
                     if ((Mouse.Captured == null) || !child.IsAncestorOf(Mouse.Captured as DependencyObject))
                     {
@@ -426,8 +564,12 @@ namespace Odyssey.Controls
                 }
                 else
                 {
-                    this.IsExpanded = false;
-                    e.Handled = true;
+
+                    if (!child.IsLogicalAncestorOf(captured))
+                    {
+                        this.IsExpanded = false;
+                        e.Handled = true;
+                    }
                 }
             }
         }
@@ -438,16 +580,6 @@ namespace Odyssey.Controls
             if (e.OriginalSource == this)
             {
                 Mouse.Capture(null);
-            }
-            if (IsExpanded && CanMinimize)
-            {
-                if (this.CanMinimize)
-                {
-                    if (!(e.Source is MenuItem) && !(e.Source is RibbonThumbnail))
-                    {
-                   //     RibbonDropDownButton.CloseOpenedPopup(null);
-                    }
-                }
             }
         }
 
@@ -468,7 +600,7 @@ namespace Odyssey.Controls
             {
                 for (int i = this.SelectedGroups.Count - 1; i >= 0; i--)
                 {
-                    RibbonGroup group = SelectedGroups[i];
+                    RibbonGroup group = SelectedGroups[i] as RibbonGroup;
                     if (group != null) yield return group;
                 }
             }
@@ -479,10 +611,13 @@ namespace Odyssey.Controls
         {
             if (SelectedGroups != null)
             {
-                Dictionary<string, RibbonGroup> d = (from g in SelectedGroups where !string.IsNullOrEmpty(g.Name) select g).ToDictionary(x => x.Name, x => x);
-                foreach (string name in names)
+                foreach (var item in SelectedGroups)
                 {
-                    if (d.ContainsKey(name)) yield return d[name];
+                    RibbonGroup group = (RibbonGroup)item;
+                    foreach (string name in names)
+                    {
+                        if (group.Name.Equals(name)) yield return group;
+                    }
                 }
             }
         }
@@ -499,8 +634,10 @@ namespace Odyssey.Controls
             MeasureGroups();
         }
 
+
         private RibbonTabItem GetTabItemFromIndex(int index)
         {
+            if (index < 0) return null;
             if (index < Tabs.Count && Tabs.Count > 0) return Tabs[index];
 
             index -= Tabs.Count;
@@ -514,7 +651,8 @@ namespace Odyssey.Controls
 
         private void SetSelectedTabItem(RibbonTabItem item)
         {
-            SelectedGroups = item != null ? item.Groups : null;
+            SelectedGroups = item != null ? item.Items : null;
+            ItemsSource = SelectedGroups;
             int index = SelectedTabIndex;
             for (int i = 0; i < Tabs.Count; i++)
             {
@@ -541,9 +679,15 @@ namespace Odyssey.Controls
 
         IEnumerable<RibbonGroup> GetSelectedGroups()
         {
-            if (SelectedGroups != null) return SelectedGroups;
-            return new RibbonGroup[0];
+            if (SelectedGroups != null)
+            {
+                foreach (var item in SelectedGroups)
+                {
+                    yield return (RibbonGroup)item;
+                }
+            }
         }
+
 
 
         /// <summary>
@@ -553,15 +697,15 @@ namespace Odyssey.Controls
         /// <remarks>
         /// This dependency property is required for the ControlTemplate to attach the groups.
         /// </remarks>
-        public Collection<RibbonGroup> SelectedGroups
+        public ItemCollection SelectedGroups
         {
-            get { return (Collection<RibbonGroup>)GetValue(SelectedGroupsProperty); }
+            get { return (ItemCollection)GetValue(SelectedGroupsProperty); }
             private set { SetValue(SelectedGroupsProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for SelectedGroup.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedGroupsProperty =
-            DependencyProperty.Register("SelectedGroups", typeof(Collection<RibbonGroup>), typeof(RibbonBar),
+            DependencyProperty.Register("SelectedGroups", typeof(ItemCollection), typeof(RibbonBar),
                 new FrameworkPropertyMetadata(null,
                     FrameworkPropertyMetadataOptions.None,
                     SelectedGroupsPropertyChanged));
@@ -569,6 +713,8 @@ namespace Odyssey.Controls
         public static void SelectedGroupsPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             RibbonBar bar = (RibbonBar)o;
+
+            bar.SelectedItem = e.NewValue;
             bar.OnSelectedGroupsChanged(e);
         }
 
@@ -639,9 +785,10 @@ namespace Odyssey.Controls
             {
                 if (GroupAlignment == RibbonBarAlignment.Right) GroupAlignment = RibbonBarAlignment.Left;
                 popup.IsOpen = isExpanded;
-                if (popup.IsOpen)
-                {
-                }
+            }
+            if (SelectedTabItem != null && CanMinimize)
+            {
+                SelectedTabItem.IsSelected = isExpanded;
             }
         }
 
@@ -696,7 +843,18 @@ namespace Odyssey.Controls
         {
             RibbonBar bar = (RibbonBar)o;
             bool canMinimize = (bool)e.NewValue;
+
+            bar.OnMinimizeChanged(canMinimize);
         }
+
+        protected virtual void OnMinimizeChanged(bool canMinimize)
+        {
+            if (SelectedTabItem != null)
+            {
+                SelectedTabItem.IsSelected = !IsExpanded;
+            }
+        }
+
 
         /// <summary>
         /// Gets or sets the index of the selected tab.
@@ -715,18 +873,22 @@ namespace Odyssey.Controls
 
 
         public static readonly RoutedEvent SelectedTabIndexChangedEvent = EventManager.RegisterRoutedEvent("SelectedTabIndexChanged",
-            RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(RibbonBar));
+            RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<int>), typeof(RibbonBar));
 
 
         static void SelectedTabIndexPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             RibbonBar bar = (RibbonBar)d;
-            RoutedEventArgs args = new RoutedEventArgs(SelectedTabIndexChangedEvent);
+            int oldIndex = (int)e.OldValue;
+            int newIndex = (int)e.NewValue;
+
+
+            RoutedPropertyChangedEventArgs<int> args = new RoutedPropertyChangedEventArgs<int>(oldIndex, newIndex, SelectedTabIndexChangedEvent);
             bar.RaiseEvent(args);
-            bar.OnSelectedTabIndexChanged(e);
+            bar.OnSelectedTabIndexChanged(args);
         }
 
-        protected virtual void OnSelectedTabIndexChanged(DependencyPropertyChangedEventArgs e)
+        protected virtual void OnSelectedTabIndexChanged(RoutedPropertyChangedEventArgs<int> e)
         {
             Color = SelectedTabItem != null && SelectedTabItem.tabSet != null ? SelectedTabItem.tabSet.Color : Colors.Transparent;
         }
@@ -817,6 +979,32 @@ namespace Odyssey.Controls
         }
 
 
+        /// <summary>
+        /// Gets whether a contextual tab is visible.
+        /// </summary>
+        public bool IsContextualTabVisible
+        {
+            get { return (bool)GetValue(IsContextualTabVisibleProperty); }
+            protected set { SetValue(IsContextualTabVisiblePropertyKey, value); }
+        }
+
+        private static readonly DependencyPropertyKey IsContextualTabVisiblePropertyKey =
+            DependencyProperty.RegisterReadOnly("IsContextualTabVisible", typeof(bool), typeof(RibbonBar), new FrameworkPropertyMetadata(false,
+                    FrameworkPropertyMetadataOptions.AffectsArrange |
+                    FrameworkPropertyMetadataOptions.AffectsMeasure |
+                    FrameworkPropertyMetadataOptions.AffectsParentMeasure,
+                    OnIsContextualTabVisiblePropertyChanged));
+
+        public static readonly DependencyProperty IsContextualTabVisibleProperty = IsContextualTabVisiblePropertyKey.DependencyProperty;
+
+
+        private static void OnIsContextualTabVisiblePropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            RibbonBar bar = (RibbonBar)o;
+            bool newValue = (bool)e.NewValue;
+
+            bar.InvalidateMeasure();
+        }
 
         /// <summary>
         /// Gets or sets the selected ContextualTabSet.
@@ -846,6 +1034,8 @@ namespace Odyssey.Controls
             RibbonContextualTabSet oldSet = e.OldValue as RibbonContextualTabSet;
             RibbonContextualTabSet newSet = e.NewValue as RibbonContextualTabSet;
 
+            IsContextualTabVisible = newSet != null;
+
             RemovePreviousContextualTabs(oldSet);
             SetContextualTabs(newSet);
 
@@ -853,6 +1043,34 @@ namespace Odyssey.Controls
             int index = GetTabIndex(SelectedTabItem);
             if (index < 0) SelectedTabIndex = 0;
 
+        }
+
+        /// <summary>
+        /// Gets the first visible <see>RibbonTabItem</see> otherwise null.
+        /// </summary>
+        public RibbonTabItem FirstVisibleTabItem
+        {
+            get
+            {
+                foreach (RibbonTabItem tab in Tabs)
+                {
+                    if (tab.IsVisible) return tab;
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Ensures that only a visible <see>RibbonTabItem</see> is selected.
+        /// </summary>
+        public void EnsureTabIsVisible()
+        {
+
+            RibbonTabItem item = SelectedTabItem;
+            if (item == null || (item.Visibility != Visibility.Visible))
+            {
+                SelectedTabItem = FirstVisibleTabItem;
+            }
         }
 
         private void AdjustContextualTabSet(RibbonContextualTabSet set)
@@ -885,6 +1103,51 @@ namespace Odyssey.Controls
             }
         }
 
+        /// <summary>
+        /// Gets an enumeration of the currently visible tabs including the contextual tabs.
+        /// </summary>
+        public IEnumerable<RibbonTabItem> VisibleTabs
+        {
+            get
+            {
+                foreach (var tab in Tabs)  if (tab.IsVisible) yield return tab;
+                if (ContextualTabSet != null)
+                {
+                    foreach (var tab in ContextualTabSet.Tabs) if (tab.IsVisible) yield return tab;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the index for VisibleTabs of the specified tab, otherwise -1.
+        /// </summary>
+        /// <param name="item">The TabItem for which to determine the index.</param>
+        /// <returns>The index related to <see cref="T:RibbonBar.VisibleTable"/>, otherwise -1.</returns>
+        public int IndexOfVisibleTab(RibbonTabItem item)
+        {
+            if (item == null) return -1;
+            int index = 0;
+            foreach (var tab in VisibleTabs)
+            {
+                if (tab == item) return index;
+                index++;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="T:RibbonTabItem" from <see cref="T:RibbonBar.VisibleTabs"/> by index.
+        /// </summary>
+        /// <param name="index">The index of the tab.</param>
+        /// <returns><see cref="T:RibbonTabItem"/>, otherwise null.</returns>
+        public RibbonTabItem VisibleTabFromIndex(int index)
+        {
+            if (index < 0) return null;
+            return VisibleTabs.Skip(index).FirstOrDefault();
+        }
+
+
+
 
 
         /// <summary>
@@ -898,68 +1161,18 @@ namespace Odyssey.Controls
         {
             get
             {
-                return new RibbonBarEnumerator(this);
+                return GetLogicalChildren().GetEnumerator();
             }
         }
 
-        #region LogicalChildrenEnumerator
-        class RibbonBarEnumerator : IEnumerator
+        private IEnumerable<object> GetLogicalChildren()
         {
-            public RibbonBarEnumerator(RibbonBar bar)
-                : base()
-            {
-                this.bar = bar;
-                Reset();
-            }
-            private RibbonBar bar;
+            if (ApplicationMenu != null) yield return ApplicationMenu;
+            foreach (var tab in Tabs) yield return tab;
+            foreach (var ct in ContextualTabSets) yield return ct;
+            if (QAToolBar != null) yield return QAToolBar;
 
-
-            IEnumerable LogicalChildren(RibbonBar bar)
-            {
-                if (bar.ApplicationMenu != null) yield return bar.ApplicationMenu;
-                foreach (var tab in bar.Tabs) yield return tab;
-                //                foreach (var set in bar.ContextualTabSets) yield return set;
-            }
-
-            #region IEnumerator Members
-
-            private object current;
-            public object Current
-            {
-                get { return current; }
-            }
-
-            public bool MoveNext()
-            {
-                if (enumeration.Count > index)
-                {
-                    current = enumeration[index++];
-                }
-                else
-                {
-                    current = null;
-                }
-                return current != null;
-            }
-
-            List<object> enumeration = new List<object>();
-            int index = 0;
-
-            public void Reset()
-            {
-                enumeration.Clear();
-                foreach (object o in LogicalChildren(bar))
-                {
-                    enumeration.Add(o);
-                }
-                index = 0;
-                current = enumeration.Count > 0 ? enumeration[0] : null;
-
-            }
-
-            #endregion
         }
-        #endregion
 
         private void AlignGroupsLeft()
         {
@@ -1005,7 +1218,19 @@ namespace Odyssey.Controls
 
         private static void MenuOpenPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
+            RibbonBar bar = o as RibbonBar;
+            bool newValue = (bool)e.NewValue;
+            if (newValue && bar.IsExpanded && bar.CanMinimize)
+            {
+                bar.IsExpanded = false;
+            }
+
             if (((bool)e.NewValue) == false) Mouse.Capture(null);
+            bar.OnMenuOpenedChanged(newValue);
+        }
+
+        protected virtual void OnMenuOpenedChanged(bool newValue)
+        {
         }
 
         [AttachedPropertyBrowsableForChildren]
@@ -1107,22 +1332,6 @@ namespace Odyssey.Controls
 
 
         /// <summary>
-        /// Gets or sets the RibbonTitle which is also the windows title if hosted in a RibbonWindow.
-        /// This is a dependency property.
-        /// </summary>
-        public object Title
-        {
-            get { return (object)GetValue(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register("Title", typeof(object), typeof(RibbonBar), new UIPropertyMetadata(null));
-
-
-
-        /// <summary>
         /// Gets or sets the QuickAccess Toolbar.
         /// This is a dependency property.
         /// </summary>
@@ -1193,5 +1402,35 @@ namespace Odyssey.Controls
         public static readonly DependencyProperty IsMinimizedProperty = IsMinimizedPropertyKey.DependencyProperty;
 
 
+
+
+        /// <summary>
+        /// Gets the left position for the Window Title.
+        /// </summary>
+        public double TitleLeft
+        {
+            get { return (double)GetValue(TitleLeftProperty); }
+            private set { SetValue(TitleLeftProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for TitleLeft.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TitleLeftProperty =
+            DependencyProperty.Register("TitleLeft", typeof(double), typeof(RibbonBar), new UIPropertyMetadata(32.0));
+
+
+
+        public bool ShowTitleOnRight
+        {
+            get { return (bool)GetValue(ShowTitleOnRightProperty); }
+            set { SetValue(ShowTitleOnRightProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ShowTitleOnRight.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ShowTitleOnRightProperty =
+            DependencyProperty.Register("ShowTitleOnRight", typeof(bool), typeof(RibbonBar), new UIPropertyMetadata(false));
+
+
+
     }
+
 }

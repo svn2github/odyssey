@@ -15,6 +15,8 @@ namespace Odyssey.Controls.Classes
     {
         private static SkinId skinId = SkinId.OfficeBlue;
 
+        public static event EventHandler SkinChanged;
+
         public static SkinId SkinId
         {
             get { return skinId; }
@@ -52,8 +54,16 @@ namespace Odyssey.Controls.Classes
                case SkinId.Vista:
                    dict.Add(Vista);
                    break;
-           }           
+           }
+           OnSkinChanged();
         }
+
+        private static void OnSkinChanged()
+        {
+            if (SkinChanged != null) SkinChanged(null, EventArgs.Empty);
+        }
+
+
 
         private static ResourceDictionary officeSilver;
         public  static ResourceDictionary OfficeSilver

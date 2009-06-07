@@ -156,5 +156,13 @@ namespace Odyssey.Controls
             }
         }
 
+        protected override System.Collections.IEnumerator LogicalChildren
+        {
+            get
+            {
+                return Tabs.GetEnumerator();
+            }
+        }
+
     }
 }
