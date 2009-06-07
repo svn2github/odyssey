@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Odyssey", "Odyssey\Odyssey.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demos", "Demos\Demos.csproj", "{4F736E6C-D570-4882-B521-93819C059E82}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{642DE219-C13C-407C-AD40-51A1D4D03EE5}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PasswordSafe", "..\PasswordSafe\PasswordSafe\PasswordSafe.csproj", "{24CBC0A1-F7C4-45A0-8D58-E1BB1B4F0629}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PasswordSafe.Data", "..\PasswordSafe\PasswordSafe.Data\PasswordSafe.Data.csproj", "{E4DA0115-54F3-4DA0-813B-CDEBF4D205E5}"
