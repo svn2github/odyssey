@@ -21,7 +21,7 @@
             ClientNodeCollapsed="collapsed"
              ClientNodeSelectionChanged="nodeSelected" 
             Font-Size="9" Font-Names="Arial"   EnableDragDrop="true" 
-            AutoPostBack="false" DisableTextSelection="true"
+            AutoPostBack="true" DisableTextSelection="true"
             EnableClientExpand="true" AllowNodeEditing="true"
             onnodeclick="OdcTreeView1_NodeClick" oncollapsed="OdcTreeView1_Collapsed"  
              OnNodeExpanded="OdcTreeView1_Expanded"  OnNodeCheck="OdcTreeView1_NodeCheck" 
